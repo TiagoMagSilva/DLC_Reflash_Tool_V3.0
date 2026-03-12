@@ -1190,17 +1190,17 @@ namespace DLC_Reflash_Tool
             //MontarPacoteSerial((UInt16)portaSerialCOM_Request.PVCommand, VinProfile[0,0]);
             //TimerVoltageAnimation.Interval = (Int32)VinProfile[0, 1];            
         }
-
+               
         //CMD COMMAND <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         Task<int> RunCmdAndStreamOutput(string command, int channel)
         {
             var psi = new ProcessStartInfo("cmd.exe", "/k " + command)
             {
                 CreateNoWindow = false,
-                UseShellExecute = false,
+                UseShellExecute = false, //Se for true, nem abre o CMD!! TEM QUE SER FALSE
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                RedirectStandardInput = false,
+                RedirectStandardInput = false,//Se for true, não digita o número do canal!
                 WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
             };
 
