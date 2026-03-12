@@ -44,6 +44,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.btn_RecarregarArquivosSW = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lblSWName = new System.Windows.Forms.Label();
             this.TimeoutSerialResponse = new System.Windows.Forms.Timer(this.components);
             this.btnLimparInfo = new System.Windows.Forms.Button();
             this.TimerVoltageAnimation = new System.Windows.Forms.Timer(this.components);
@@ -62,6 +63,7 @@
             this.btnOUT3_ON = new System.Windows.Forms.Button();
             this.btnOUT2_OFF = new System.Windows.Forms.Button();
             this.btnOUT2_ON = new System.Windows.Forms.Button();
+            this.cbkGravaçãoDupla = new System.Windows.Forms.CheckBox();
             this.GroupBox_SerialCOM.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -203,6 +205,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.lblSWName);
             this.groupBox1.Controls.Add(this.btn_RecarregarArquivosSW);
             this.groupBox1.Controls.Add(this.btn_Carregar_ST_SW);
             this.groupBox1.Controls.Add(this.label1);
@@ -213,6 +216,16 @@
             this.groupBox1.TabIndex = 30;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Arquivo de Software Atualizado";
+            // 
+            // lblSWName
+            // 
+            this.lblSWName.AutoSize = true;
+            this.lblSWName.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSWName.ForeColor = System.Drawing.Color.Blue;
+            this.lblSWName.Location = new System.Drawing.Point(6, 56);
+            this.lblSWName.Name = "lblSWName";
+            this.lblSWName.Size = new System.Drawing.Size(0, 31);
+            this.lblSWName.TabIndex = 30;
             // 
             // TimeoutSerialResponse
             // 
@@ -379,11 +392,23 @@
             this.btnOUT2_ON.UseVisualStyleBackColor = true;
             this.btnOUT2_ON.Click += new System.EventHandler(this.btnOUT2_ON_Click);
             // 
+            // cbkGravaçãoDupla
+            // 
+            this.cbkGravaçãoDupla.AutoSize = true;
+            this.cbkGravaçãoDupla.Location = new System.Drawing.Point(114, 132);
+            this.cbkGravaçãoDupla.Name = "cbkGravaçãoDupla";
+            this.cbkGravaçãoDupla.Size = new System.Drawing.Size(155, 17);
+            this.cbkGravaçãoDupla.TabIndex = 44;
+            this.cbkGravaçãoDupla.Text = "Gravação Dupla (LH + RH)";
+            this.cbkGravaçãoDupla.UseVisualStyleBackColor = true;
+            this.cbkGravaçãoDupla.CheckedChanged += new System.EventHandler(this.cbkGravaçãoDupla_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(523, 488);
+            this.Controls.Add(this.cbkGravaçãoDupla);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.btnCancelarProcesso);
             this.Controls.Add(this.label5);
@@ -447,6 +472,8 @@
         private System.Windows.Forms.Button btnOUT3_ON;
         private System.Windows.Forms.Button btnOUT2_OFF;
         private System.Windows.Forms.Button btnOUT2_ON;
+        private System.Windows.Forms.CheckBox cbkGravaçãoDupla;
+        private System.Windows.Forms.Label lblSWName;
     }
 }
 
