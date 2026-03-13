@@ -37,6 +37,8 @@ namespace DLC_Reflash_Tool
         String path_LOG = System.AppDomain.CurrentDomain.BaseDirectory + "/LOG/";
         String path_CONFIG = System.AppDomain.CurrentDomain.BaseDirectory + "/CONFIG/";
 
+        private CancellationTokenSource beepCancellationToken;
+
         private SerialPort PortaSerialCOM = new SerialPort();
 
         UInt16 RequestIndex = 0, aux_count = 0, TempoDecorrido = 0, QT_Timeout = 0;
@@ -279,8 +281,8 @@ namespace DLC_Reflash_Tool
                     //Com isto, apenas a última linha será considerada!
                     foreach (string line in LinhasDoTXT)
                     {
-                        txt_Caminho_ST_SW.Text = line;
-                        lblSWName.Text = Path.GetFileName(line);
+                        //txt_Caminho_ST_SW.Text = line;
+                        lblSWName.Text = line;
                     }
                 }
             }
@@ -357,6 +359,7 @@ namespace DLC_Reflash_Tool
             }
         }*/
 
+        /*
         void Salvar_Dados_D4X_ST_SW()
         {
             try
@@ -390,7 +393,7 @@ namespace DLC_Reflash_Tool
             {
                 MessageBox.Show("Não foi possível salvar o caminho para arquivo D4X_ST_SW!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
+        }*/
 
         void LOG_TXT(String MSG)
         {
@@ -1077,6 +1080,7 @@ namespace DLC_Reflash_Tool
             TimerVoltageAnimation.Start();
         }
 
+        /*
         private void btn_Carregar_ST_SW_Click(object sender, EventArgs e)
         {
             using (var ofd = new OpenFileDialog())
@@ -1092,7 +1096,7 @@ namespace DLC_Reflash_Tool
                     // Clipboard.SetText(ofd.FileName);
                 }
             }
-        }
+        }*/
 
         /*
         private void btn_Carregar_DL_SWSB_Click(object sender, EventArgs e)
@@ -1115,7 +1119,7 @@ namespace DLC_Reflash_Tool
         {
             if (PortaSerialCOM.IsOpen)
             {
-                if (txt_Caminho_ST_SW.Text != string.Empty)
+                if (lblSWName.Text != string.Empty)
                 {
                     //Aqui deve ser implementada a lógica para iniciar o processo de gravação, utilizando os arquivos e a porta serial selecionados.
                     //Checar_Status_Inicial();
@@ -2284,7 +2288,7 @@ namespace DLC_Reflash_Tool
                     TimerForceBootMode.Stop();
 
                     string D4X_DL_SWSB_File = "D4X_DL000_SWSB_0210.hex";
-                    string D4X_ST_SW_File = Path.GetFileName(txt_Caminho_ST_SW.Text);
+                    string D4X_ST_SW_File = lblSWName.Text;
                     string cmdCommand = ".\\ALFlasherAll.exe --ecuClass NXP --baud 19200 --txId 0x3C --rxId " +
                                         "0x3D --lin --ram " + D4X_DL_SWSB_File + " --jumpAddr 0x20000004 --writeCode " +
                                         D4X_ST_SW_File + " --crcCode " + D4X_ST_SW_File + " --ecuReset";
@@ -2342,7 +2346,7 @@ namespace DLC_Reflash_Tool
                     TimerForceBootMode.Stop();
 
                     string D4X_DL_SWSB_File = "D4X_DL000_SWSB_0210.hex";
-                    string D4X_ST_SW_File = Path.GetFileName(txt_Caminho_ST_SW.Text);
+                    string D4X_ST_SW_File = lblSWName.Text;
                     string cmdCommand = ".\\ALFlasherAll.exe --ecuClass NXP --baud 19200 --txId 0x3C --rxId " +
                                         "0x3D --lin --ram " + D4X_DL_SWSB_File + " --jumpAddr 0x20000004 --writeCode " +
                                         D4X_ST_SW_File + " --crcCode " + D4X_ST_SW_File + " --ecuReset";
@@ -2377,7 +2381,7 @@ namespace DLC_Reflash_Tool
                     TimerForceBootMode.Stop();
 
                     string D4X_DL_SWSB_File = "D4X_DL000_SWSB_0210.hex";
-                    string D4X_ST_SW_File = Path.GetFileName(txt_Caminho_ST_SW.Text);
+                    string D4X_ST_SW_File = lblSWName.Text;
                     string cmdCommand = ".\\ALFlasherAll.exe --ecuClass NXP --baud 19200 --txId 0x3C --rxId " +
                                         "0x3D --lin --ram " + D4X_DL_SWSB_File + " --jumpAddr 0x20000004 --writeCode " +
                                         D4X_ST_SW_File + " --crcCode " + D4X_ST_SW_File + " --ecuReset";
@@ -2394,6 +2398,42 @@ namespace DLC_Reflash_Tool
                         var Channel0_process_single = RunCmdAndStreamOutput(cmdCommand, 0);
                     }                    
                 }
+            }
+        }
+
+        async Task BeepIntervalado(int frequencia = 800, int duracao = 200, int intervalo = 500, int repeticoes = 5)
+        {
+            beepCancellationToken = new CancellationTokenSource();
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    for (int i = 0; i < repeticoes; i++)
+                    {
+                        if (beepCancellationToken.Token.IsCancellationRequested)
+                            break;
+
+                        Console.Beep(frequencia, duracao);
+
+                        if (i < repeticoes - 1) // Não aguarda após o último beep
+                        {
+                            Thread.Sleep(intervalo);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LOG_TXT("Erro ao emitir beep: " + ex.Message);
+                }
+            }, beepCancellationToken.Token);
+        }
+
+        void PararBeep()
+        {
+            if (beepCancellationToken != null)
+            {
+                beepCancellationToken.Cancel();
             }
         }
     }

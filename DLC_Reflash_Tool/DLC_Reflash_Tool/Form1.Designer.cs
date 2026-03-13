@@ -39,10 +39,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.txt_Info = new System.Windows.Forms.TextBox();
             this.btn_Iniciar_Gravação = new System.Windows.Forms.Button();
-            this.txt_Caminho_ST_SW = new System.Windows.Forms.TextBox();
-            this.btn_Carregar_ST_SW = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.btn_RecarregarArquivosSW = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.lblSWName = new System.Windows.Forms.Label();
             this.TimeoutSerialResponse = new System.Windows.Forms.Timer(this.components);
@@ -167,62 +163,22 @@
             this.btn_Iniciar_Gravação.UseVisualStyleBackColor = false;
             this.btn_Iniciar_Gravação.Click += new System.EventHandler(this.btn_Iniciar_Gravação_Click);
             // 
-            // txt_Caminho_ST_SW
-            // 
-            this.txt_Caminho_ST_SW.Location = new System.Drawing.Point(9, 33);
-            this.txt_Caminho_ST_SW.Name = "txt_Caminho_ST_SW";
-            this.txt_Caminho_ST_SW.Size = new System.Drawing.Size(346, 20);
-            this.txt_Caminho_ST_SW.TabIndex = 23;
-            // 
-            // btn_Carregar_ST_SW
-            // 
-            this.btn_Carregar_ST_SW.Location = new System.Drawing.Point(361, 33);
-            this.btn_Carregar_ST_SW.Name = "btn_Carregar_ST_SW";
-            this.btn_Carregar_ST_SW.Size = new System.Drawing.Size(26, 23);
-            this.btn_Carregar_ST_SW.TabIndex = 24;
-            this.btn_Carregar_ST_SW.Text = "...";
-            this.btn_Carregar_ST_SW.UseVisualStyleBackColor = true;
-            this.btn_Carregar_ST_SW.Click += new System.EventHandler(this.btn_Carregar_ST_SW_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 16);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(221, 13);
-            this.label1.TabIndex = 25;
-            this.label1.Text = "Caminho para D4X_STxxx_SWyyyy_All (.hex)";
-            // 
-            // btn_RecarregarArquivosSW
-            // 
-            this.btn_RecarregarArquivosSW.Location = new System.Drawing.Point(312, 62);
-            this.btn_RecarregarArquivosSW.Name = "btn_RecarregarArquivosSW";
-            this.btn_RecarregarArquivosSW.Size = new System.Drawing.Size(75, 23);
-            this.btn_RecarregarArquivosSW.TabIndex = 29;
-            this.btn_RecarregarArquivosSW.Text = "Recarregar";
-            this.btn_RecarregarArquivosSW.UseVisualStyleBackColor = true;
-            this.btn_RecarregarArquivosSW.Click += new System.EventHandler(this.btn_RecarregarArquivosSW_Click);
-            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.lblSWName);
-            this.groupBox1.Controls.Add(this.btn_RecarregarArquivosSW);
-            this.groupBox1.Controls.Add(this.btn_Carregar_ST_SW);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.txt_Caminho_ST_SW);
             this.groupBox1.Location = new System.Drawing.Point(114, 27);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(397, 98);
             this.groupBox1.TabIndex = 30;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Arquivo de Software Atualizado";
+            this.groupBox1.Text = "Arquivo de Software em gravação";
             // 
             // lblSWName
             // 
             this.lblSWName.AutoSize = true;
             this.lblSWName.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblSWName.ForeColor = System.Drawing.Color.Blue;
-            this.lblSWName.Location = new System.Drawing.Point(6, 56);
+            this.lblSWName.Location = new System.Drawing.Point(6, 32);
             this.lblSWName.Name = "lblSWName";
             this.lblSWName.Size = new System.Drawing.Size(0, 31);
             this.lblSWName.TabIndex = 30;
@@ -447,10 +403,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox txt_Info;
         private System.Windows.Forms.Button btn_Iniciar_Gravação;
-        private System.Windows.Forms.TextBox txt_Caminho_ST_SW;
-        private System.Windows.Forms.Button btn_Carregar_ST_SW;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button btn_RecarregarArquivosSW;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Timer TimeoutSerialResponse;
         private System.Windows.Forms.Button btnLimparInfo;
