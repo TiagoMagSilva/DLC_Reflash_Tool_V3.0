@@ -173,6 +173,71 @@ namespace DLC_Reflash_Tool
         public MainForm()
         {
             InitializeComponent();
+
+            // Habilita captura de teclas do Form
+            this.KeyPreview = true;
+
+            // Associa o evento (para teclas que não são de navegação)
+            this.KeyDown += MainForm_KeyDown;
+
+            this.ActiveControl = btnConectarPortaSerialCOM;
+        }
+
+        // Teclas de seta são interceptadas pelo Windows Forms antes do KeyDown.
+        // ProcessCmdKey captura essas teclas em um nível mais baixo.
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            // Right = Iniciar Gravação
+            if (keyData == Keys.Right && btn_Iniciar_Gravação.Enabled)
+            {
+                Console.WriteLine("Right arrow pressed - Starting recording...");
+                btn_Iniciar_Gravação.PerformClick();
+                return true;
+            }
+
+            // Up = Ligar Saída
+            if (keyData == Keys.Up && btnOUT1_ON.Enabled)
+            {
+                Console.WriteLine("Up arrow pressed - Turning output ON...");
+                btnOUT1_ON.PerformClick();
+                return true;
+            }
+
+            // Down = Desligar Saída
+            if (keyData == Keys.Down && btnOUT1_OFF.Enabled)
+            {
+                Console.WriteLine("Down arrow pressed - Turning output OFF...");
+                btnOUT1_OFF.PerformClick();
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Ctrl+L = Limpar Info
+            if (e.KeyCode == Keys.L)
+            {
+                Console.WriteLine("L pressed - Clearing info...");
+                btnLimparInfo.PerformClick();
+                e.Handled = true;
+            }
+
+            if(e.KeyCode == Keys.A)
+            {
+                Console.WriteLine("A pressed - opening COM port...");
+                btnConectarPortaSerialCOM.PerformClick();
+                e.Handled = true;
+            }
+
+            // Esc = Cancelar Processo
+            if (e.KeyCode == Keys.Escape)
+            {
+                Console.WriteLine("Escape pressed - Canceling process...");
+                btnCancelarProcesso.PerformClick();
+                e.Handled = true;
+            }
         }
 
         void CheckUP_Inicial()
@@ -183,7 +248,9 @@ namespace DLC_Reflash_Tool
                       
             
             cbxPortaSerialCOM.Enabled = true;
-            btnRefreshPortaSerialCOM.Enabled = true;                
+            btnRefreshPortaSerialCOM.Enabled = true;
+
+            this.ActiveControl = btnConectarPortaSerialCOM;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -434,26 +501,33 @@ namespace DLC_Reflash_Tool
                 throw new Exception("Porta serial não está aberta.");
             }
 
-            PortaSerialCOM.DiscardInBuffer();
-            PortaSerialCOM.DiscardOutBuffer();
+            try
+            {
+                PortaSerialCOM.DiscardInBuffer();
+                PortaSerialCOM.DiscardOutBuffer();
 
-            if(cbxModeloFonte.SelectedIndex == 3)
-            {
-                PortaSerialCOM.Write(command);
+                if (cbxModeloFonte.SelectedIndex == 3)
+                {
+                    PortaSerialCOM.Write(command);
+                }
+                else
+                {
+                    PortaSerialCOM.WriteLine(command);
+                }
+
+                if (command.Contains("?"))
+                {
+                    Thread.Sleep(200);
+                    string response = PortaSerialCOM.ReadLine().Trim();
+                    return response;
+                }
+
+                return string.Empty;
             }
-            else
+            catch(Exception ex)
             {
-                PortaSerialCOM.WriteLine(command);
+                return string.Empty;
             }            
-
-            if (command.Contains("?"))
-            {
-                Thread.Sleep(200);
-                string response = PortaSerialCOM.ReadLine().Trim();
-                return response;
-            }
-
-            return string.Empty;
         }
 
         private void btnConectarPortaSerialCOM_Click(object sender, EventArgs e)
@@ -495,7 +569,7 @@ namespace DLC_Reflash_Tool
                             btnConectarPortaSerialCOM.Text = "Desconectar";
                             btnOUT1_OFF.Enabled = true;
                             btnOUT1_ON.Enabled = true;
-                            btnConectarPortaSerialCOM.Text = "Fechar Porta";                            
+                            btnConectarPortaSerialCOM.Text = "Fechar Porta (A)";                            
                             cbxPortaSerialCOM.Enabled = false;
                             btnRefreshPortaSerialCOM.Enabled = false;                            
                             cbxModeloFonte.Enabled = false;
@@ -514,7 +588,7 @@ namespace DLC_Reflash_Tool
                                 {
                                     btnOUT1_OFF.Enabled = true;
                                     btnOUT1_ON.Enabled = true;
-                                    btnConectarPortaSerialCOM.Text = "Fechar Porta";                                    
+                                    btnConectarPortaSerialCOM.Text = "Fechar Porta (A)";                                    
                                     cbxPortaSerialCOM.Enabled = false;
                                     btnRefreshPortaSerialCOM.Enabled = false;
                                     Salvar_Dados_Serial();
@@ -549,7 +623,7 @@ namespace DLC_Reflash_Tool
                         btnOUT1_OFF.Enabled = false;
                         btnOUT1_ON.Enabled = false;
                         PortaSerialCOM.Close();
-                        btnConectarPortaSerialCOM.Text = "Abrir Porta";                        
+                        btnConectarPortaSerialCOM.Text = "Abrir Porta (A)";                        
                         cbxPortaSerialCOM.Enabled = true;
                         btnRefreshPortaSerialCOM.Enabled = true;                        
                         cbxModeloFonte.Enabled = true;
@@ -565,7 +639,7 @@ namespace DLC_Reflash_Tool
                         btnOUT1_OFF.Enabled = false;
                         btnOUT1_ON.Enabled = false;
                         PortaSerialCOM.Close();
-                        btnConectarPortaSerialCOM.Text = "Abrir Porta";                        
+                        btnConectarPortaSerialCOM.Text = "Abrir Porta (A)";                        
                         cbxPortaSerialCOM.Enabled = true;
                         btnRefreshPortaSerialCOM.Enabled = true;                        
                         cbxModeloFonte.Enabled = true;
@@ -595,7 +669,6 @@ namespace DLC_Reflash_Tool
 
                 if (!PortaSerialCOM.IsOpen)
                 {
-
                     if (cbxPortaSerialCOM.Items.Count > 0)
                     {
                         if (cbxPortaSerialCOM.SelectedIndex > -1)
@@ -634,6 +707,7 @@ namespace DLC_Reflash_Tool
                     {
                         btnOUT1_OFF.Enabled = true;
                         btnOUT1_ON.Enabled = true;
+                        cbxModeloFonte.Enabled = false;
 
                         if (cbxModeloFonte.SelectedIndex == 2)//MPS
                         {
@@ -643,7 +717,7 @@ namespace DLC_Reflash_Tool
                             btnOUT3_ON.Enabled = true;
                         }
 
-                        btnConectarPortaSerialCOM.Text = "Fechar Porta";
+                        btnConectarPortaSerialCOM.Text = "Fechar Porta (A)";
                         cbxPortaSerialCOM.Enabled = false;
                         btnRefreshPortaSerialCOM.Enabled = false;
                         Salvar_Dados_Serial();
@@ -658,6 +732,7 @@ namespace DLC_Reflash_Tool
                     {
                         TimeoutSerialResponse.Stop();
                         TimerVoltageAnimation.Stop();
+                        cbxModeloFonte.Enabled = false;
                         btnOUT1_OFF.Enabled = false;
                         btnOUT1_ON.Enabled = false;
                         btnOUT2_OFF.Enabled = false;
@@ -665,7 +740,7 @@ namespace DLC_Reflash_Tool
                         btnOUT3_OFF.Enabled = false;
                         btnOUT3_ON.Enabled = false;
                         PortaSerialCOM.Close();
-                        btnConectarPortaSerialCOM.Text = "Abrir Porta";
+                        btnConectarPortaSerialCOM.Text = "Abrir Porta (A)";
                         cbxPortaSerialCOM.Enabled = true;
                         btnRefreshPortaSerialCOM.Enabled = true;
 
@@ -724,7 +799,7 @@ namespace DLC_Reflash_Tool
                             btnConectarPortaSerialCOM.Text = "Desconectar";
                             btnOUT1_OFF.Enabled = true;
                             btnOUT1_ON.Enabled = true;
-                            btnConectarPortaSerialCOM.Text = "Fechar Porta";
+                            btnConectarPortaSerialCOM.Text = "Fechar Porta (A)";
                             cbxPortaSerialCOM.Enabled = false;
                             btnRefreshPortaSerialCOM.Enabled = false;
                             cbxModeloFonte.Enabled = false;
@@ -743,7 +818,7 @@ namespace DLC_Reflash_Tool
                                 {
                                     btnOUT1_OFF.Enabled = true;
                                     btnOUT1_ON.Enabled = true;
-                                    btnConectarPortaSerialCOM.Text = "Fechar Porta";
+                                    btnConectarPortaSerialCOM.Text = "Fechar Porta (A)";
                                     cbxPortaSerialCOM.Enabled = false;
                                     btnRefreshPortaSerialCOM.Enabled = false;
                                     Salvar_Dados_Serial();
@@ -781,7 +856,7 @@ namespace DLC_Reflash_Tool
                         btnOUT1_OFF.Enabled = false;
                         btnOUT1_ON.Enabled = false;
                         PortaSerialCOM.Close();
-                        btnConectarPortaSerialCOM.Text = "Abrir Porta";
+                        btnConectarPortaSerialCOM.Text = "Abrir Porta (A)";
                         cbxPortaSerialCOM.Enabled = true;
                         btnRefreshPortaSerialCOM.Enabled = true;
                         cbxModeloFonte.Enabled = true;
@@ -797,7 +872,7 @@ namespace DLC_Reflash_Tool
                         btnOUT1_OFF.Enabled = false;
                         btnOUT1_ON.Enabled = false;
                         PortaSerialCOM.Close();
-                        btnConectarPortaSerialCOM.Text = "Abrir Porta";
+                        btnConectarPortaSerialCOM.Text = "Abrir Porta (A)";
                         cbxPortaSerialCOM.Enabled = true;
                         btnRefreshPortaSerialCOM.Enabled = true;
                         cbxModeloFonte.Enabled = true;
@@ -947,7 +1022,7 @@ namespace DLC_Reflash_Tool
                                     {
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
-                                        btnConectarPortaSerialCOM.Text = "Fechar Porta";                                        
+                                        btnConectarPortaSerialCOM.Text = "Fechar Porta (A)";                                        
                                         cbxPortaSerialCOM.Enabled = false;
                                         btnRefreshPortaSerialCOM.Enabled = false;
                                         Salvar_Dados_Serial();
@@ -967,7 +1042,7 @@ namespace DLC_Reflash_Tool
                                 {
                                     btnOUT1_OFF.Enabled = true;
                                     btnOUT1_ON.Enabled = true;
-                                    btnConectarPortaSerialCOM.Text = "Fechar Porta";                                    
+                                    btnConectarPortaSerialCOM.Text = "Fechar Porta (A)";                                    
                                     cbxPortaSerialCOM.Enabled = false;
                                     btnRefreshPortaSerialCOM.Enabled = false;
                                     Salvar_Dados_Serial();

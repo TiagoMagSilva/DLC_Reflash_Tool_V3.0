@@ -51,8 +51,6 @@
             this.TimerContador = new System.Windows.Forms.Timer(this.components);
             this.TimerForceBootMode = new System.Windows.Forms.Timer(this.components);
             this.lblEtapa = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.btnCancelarProcesso = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.btnOUT3_OFF = new System.Windows.Forms.Button();
@@ -60,6 +58,8 @@
             this.btnOUT2_OFF = new System.Windows.Forms.Button();
             this.btnOUT2_ON = new System.Windows.Forms.Button();
             this.cbkGravaçãoDupla = new System.Windows.Forms.CheckBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.GroupBox_SerialCOM.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -100,7 +100,7 @@
             this.btnConectarPortaSerialCOM.Name = "btnConectarPortaSerialCOM";
             this.btnConectarPortaSerialCOM.Size = new System.Drawing.Size(85, 34);
             this.btnConectarPortaSerialCOM.TabIndex = 18;
-            this.btnConectarPortaSerialCOM.Text = "Abrir Porta";
+            this.btnConectarPortaSerialCOM.Text = "Abrir Porta (A)";
             this.btnConectarPortaSerialCOM.UseVisualStyleBackColor = true;
             this.btnConectarPortaSerialCOM.Click += new System.EventHandler(this.btnConectarPortaSerialCOM_Click);
             // 
@@ -155,11 +155,11 @@
             this.btn_Iniciar_Gravação.BackColor = System.Drawing.SystemColors.ButtonShadow;
             this.btn_Iniciar_Gravação.Enabled = false;
             this.btn_Iniciar_Gravação.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Iniciar_Gravação.Location = new System.Drawing.Point(114, 168);
+            this.btn_Iniciar_Gravação.Location = new System.Drawing.Point(114, 155);
             this.btn_Iniciar_Gravação.Name = "btn_Iniciar_Gravação";
-            this.btn_Iniciar_Gravação.Size = new System.Drawing.Size(130, 83);
+            this.btn_Iniciar_Gravação.Size = new System.Drawing.Size(130, 96);
             this.btn_Iniciar_Gravação.TabIndex = 22;
-            this.btn_Iniciar_Gravação.Text = "Iniciar Gravação";
+            this.btn_Iniciar_Gravação.Text = "Iniciar Gravação (→)";
             this.btn_Iniciar_Gravação.UseVisualStyleBackColor = false;
             this.btn_Iniciar_Gravação.Click += new System.EventHandler(this.btn_Iniciar_Gravação_Click);
             // 
@@ -194,7 +194,7 @@
             this.btnLimparInfo.Name = "btnLimparInfo";
             this.btnLimparInfo.Size = new System.Drawing.Size(75, 23);
             this.btnLimparInfo.TabIndex = 31;
-            this.btnLimparInfo.Text = "Limpar";
+            this.btnLimparInfo.Text = "Limpar (L)";
             this.btnLimparInfo.UseVisualStyleBackColor = true;
             this.btnLimparInfo.Click += new System.EventHandler(this.btnLimparInfo_Click);
             // 
@@ -205,11 +205,11 @@
             // btnOUT1_OFF
             // 
             this.btnOUT1_OFF.Enabled = false;
-            this.btnOUT1_OFF.Location = new System.Drawing.Point(84, 19);
+            this.btnOUT1_OFF.Location = new System.Drawing.Point(114, 19);
             this.btnOUT1_OFF.Name = "btnOUT1_OFF";
-            this.btnOUT1_OFF.Size = new System.Drawing.Size(75, 23);
+            this.btnOUT1_OFF.Size = new System.Drawing.Size(94, 23);
             this.btnOUT1_OFF.TabIndex = 35;
-            this.btnOUT1_OFF.Text = "OUT1 OFF";
+            this.btnOUT1_OFF.Text = "OUT1 OFF (↓)";
             this.btnOUT1_OFF.UseVisualStyleBackColor = true;
             this.btnOUT1_OFF.Click += new System.EventHandler(this.btnOUT_OFF_Click);
             // 
@@ -218,15 +218,15 @@
             this.btnOUT1_ON.Enabled = false;
             this.btnOUT1_ON.Location = new System.Drawing.Point(6, 19);
             this.btnOUT1_ON.Name = "btnOUT1_ON";
-            this.btnOUT1_ON.Size = new System.Drawing.Size(75, 23);
+            this.btnOUT1_ON.Size = new System.Drawing.Size(87, 23);
             this.btnOUT1_ON.TabIndex = 35;
-            this.btnOUT1_ON.Text = "OUT1 ON";
+            this.btnOUT1_ON.Text = "OUT1 ON (↑)";
             this.btnOUT1_ON.UseVisualStyleBackColor = true;
             this.btnOUT1_ON.Click += new System.EventHandler(this.btnOUT_ON_Click);
             // 
             // TimerCheckBootMode
             // 
-            this.TimerCheckBootMode.Interval = 500;
+            this.TimerCheckBootMode.Interval = 1000;
             this.TimerCheckBootMode.Tick += new System.EventHandler(this.TimerCheckBootMode_Tick);
             // 
             // lblTimer
@@ -257,35 +257,13 @@
             this.lblEtapa.TabIndex = 40;
             this.lblEtapa.Text = "Etapa: ";
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.ForeColor = System.Drawing.Color.Red;
-            this.label4.Location = new System.Drawing.Point(12, 450);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(427, 13);
-            this.label4.TabIndex = 41;
-            this.label4.Text = "Uma janela do CMD será aberta automaticamente. Ao final do processo, ela também s" +
-    "erá";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.ForeColor = System.Drawing.Color.Red;
-            this.label5.Location = new System.Drawing.Point(12, 466);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(474, 13);
-            this.label5.TabIndex = 41;
-            this.label5.Text = "fechada automaticamente. Caso o fechamento não ocorra após o processo, feche-a ma" +
-    "nualmente.";
-            // 
             // btnCancelarProcesso
             // 
-            this.btnCancelarProcesso.Location = new System.Drawing.Point(142, 257);
+            this.btnCancelarProcesso.Location = new System.Drawing.Point(132, 257);
             this.btnCancelarProcesso.Name = "btnCancelarProcesso";
-            this.btnCancelarProcesso.Size = new System.Drawing.Size(75, 24);
+            this.btnCancelarProcesso.Size = new System.Drawing.Size(95, 24);
             this.btnCancelarProcesso.TabIndex = 42;
-            this.btnCancelarProcesso.Text = "Cancelar";
+            this.btnCancelarProcesso.Text = "Cancelar (ESC)";
             this.btnCancelarProcesso.UseVisualStyleBackColor = true;
             this.btnCancelarProcesso.Click += new System.EventHandler(this.btnCancelarProcesso_Click);
             // 
@@ -299,7 +277,7 @@
             this.groupBox3.Controls.Add(this.btnOUT1_ON);
             this.groupBox3.Location = new System.Drawing.Point(250, 168);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(165, 113);
+            this.groupBox3.Size = new System.Drawing.Size(224, 113);
             this.groupBox3.TabIndex = 43;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Controle Manual";
@@ -307,11 +285,11 @@
             // btnOUT3_OFF
             // 
             this.btnOUT3_OFF.Enabled = false;
-            this.btnOUT3_OFF.Location = new System.Drawing.Point(84, 77);
+            this.btnOUT3_OFF.Location = new System.Drawing.Point(114, 77);
             this.btnOUT3_OFF.Name = "btnOUT3_OFF";
-            this.btnOUT3_OFF.Size = new System.Drawing.Size(75, 23);
+            this.btnOUT3_OFF.Size = new System.Drawing.Size(94, 23);
             this.btnOUT3_OFF.TabIndex = 35;
-            this.btnOUT3_OFF.Text = "OUT3 OFF";
+            this.btnOUT3_OFF.Text = "OUT3 OFF (↓)";
             this.btnOUT3_OFF.UseVisualStyleBackColor = true;
             this.btnOUT3_OFF.Click += new System.EventHandler(this.btnOUT3_OFF_Click);
             // 
@@ -320,20 +298,20 @@
             this.btnOUT3_ON.Enabled = false;
             this.btnOUT3_ON.Location = new System.Drawing.Point(6, 77);
             this.btnOUT3_ON.Name = "btnOUT3_ON";
-            this.btnOUT3_ON.Size = new System.Drawing.Size(75, 23);
+            this.btnOUT3_ON.Size = new System.Drawing.Size(87, 23);
             this.btnOUT3_ON.TabIndex = 35;
-            this.btnOUT3_ON.Text = "OUT3 ON";
+            this.btnOUT3_ON.Text = "OUT3 ON (↑)";
             this.btnOUT3_ON.UseVisualStyleBackColor = true;
             this.btnOUT3_ON.Click += new System.EventHandler(this.btnOUT3_ON_Click);
             // 
             // btnOUT2_OFF
             // 
             this.btnOUT2_OFF.Enabled = false;
-            this.btnOUT2_OFF.Location = new System.Drawing.Point(84, 48);
+            this.btnOUT2_OFF.Location = new System.Drawing.Point(114, 48);
             this.btnOUT2_OFF.Name = "btnOUT2_OFF";
-            this.btnOUT2_OFF.Size = new System.Drawing.Size(75, 23);
+            this.btnOUT2_OFF.Size = new System.Drawing.Size(94, 23);
             this.btnOUT2_OFF.TabIndex = 35;
-            this.btnOUT2_OFF.Text = "OUT2 OFF";
+            this.btnOUT2_OFF.Text = "OUT2 OFF (↓)";
             this.btnOUT2_OFF.UseVisualStyleBackColor = true;
             this.btnOUT2_OFF.Click += new System.EventHandler(this.btnOUT2_OFF_Click);
             // 
@@ -342,9 +320,9 @@
             this.btnOUT2_ON.Enabled = false;
             this.btnOUT2_ON.Location = new System.Drawing.Point(6, 48);
             this.btnOUT2_ON.Name = "btnOUT2_ON";
-            this.btnOUT2_ON.Size = new System.Drawing.Size(75, 23);
+            this.btnOUT2_ON.Size = new System.Drawing.Size(87, 23);
             this.btnOUT2_ON.TabIndex = 35;
-            this.btnOUT2_ON.Text = "OUT2 ON";
+            this.btnOUT2_ON.Text = "OUT2 ON (↑)";
             this.btnOUT2_ON.UseVisualStyleBackColor = true;
             this.btnOUT2_ON.Click += new System.EventHandler(this.btnOUT2_ON_Click);
             // 
@@ -358,6 +336,28 @@
             this.cbkGravaçãoDupla.Text = "Gravação Dupla (LH + RH)";
             this.cbkGravaçãoDupla.UseVisualStyleBackColor = true;
             this.cbkGravaçãoDupla.CheckedChanged += new System.EventHandler(this.cbkGravaçãoDupla_CheckedChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label5.Location = new System.Drawing.Point(12, 466);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(474, 13);
+            this.label5.TabIndex = 41;
+            this.label5.Text = "fechada automaticamente. Caso o fechamento não ocorra após o processo, feche-a ma" +
+    "nualmente.";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label4.Location = new System.Drawing.Point(12, 450);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(427, 13);
+            this.label4.TabIndex = 41;
+            this.label4.Text = "Uma janela do CMD será aberta automaticamente. Ao final do processo, ela também s" +
+    "erá";
             // 
             // MainForm
             // 
@@ -414,8 +414,6 @@
         private System.Windows.Forms.Timer TimerContador;
         private System.Windows.Forms.Timer TimerForceBootMode;
         private System.Windows.Forms.Label lblEtapa;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button btnCancelarProcesso;
         private System.Windows.Forms.ComboBox cbxModeloFonte;
         private System.Windows.Forms.Label label6;
@@ -426,6 +424,8 @@
         private System.Windows.Forms.Button btnOUT2_ON;
         private System.Windows.Forms.CheckBox cbkGravaçãoDupla;
         private System.Windows.Forms.Label lblSWName;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
     }
 }
 
