@@ -1248,18 +1248,38 @@ namespace DLC_Reflash_Tool
             else if(cbxModeloFonte.SelectedIndex == 3) //AFR
             {
                 Console.WriteLine("Iniciando para AFR");
-                SendCommand("OUTPUT1\\n");
 
+                //Tentando contornar o erro da fonte 3...
+                //parece que a fonte não aceita o comando de ligar a saída na primeira vez,
+                //mas se enviar o comando algumas vezes, ela liga. Muito estranho isso, mas vamos lá...
+                SendCommand("OUTPUT1\\n");
                 Thread.Sleep(200);
+
+                SendCommand("OUTPUT1\\n");
+                Thread.Sleep(200);
+
+                SendCommand("OUTPUT1\\n");
+                Thread.Sleep(200);
+
                 string outputState = SendCommand("STATUS?\\n").Trim();
+                
+                outputState = SendCommand("STATUS?\\n").Trim();
+                
+                outputState = SendCommand("STATUS?\\n").Trim();
+                
                 Console.WriteLine(outputState);
+
+                // MSb indica: 0 - CC | 1 - CV
+                // Bit do meio indica: 0 - Output desligada | 1 - Output ligada
+                // LSb indica: 0 - Sem falha | 1 - Falha OCP
+
                 if (outputState == "110")
                 {                    
                     TimerVoltageAnimation.Start();
                 }
                 else
                 {
-                    AppendToTxtInfoSafe("Falha ao ligar a saída da fonte.");
+                    AppendToTxtInfoSafe("Falha ao ligar a saída da fonte. Retorno: " + outputState);
                 }
             }
 
@@ -2104,8 +2124,12 @@ namespace DLC_Reflash_Tool
             } 
             else if(cbxModeloFonte.SelectedIndex == 3) //AFR 3005P
             {
+                //Enviando duas vezes pois a fonte as vezes não responde ao primeiro comando algumas vezes
                 SendCommand("VSET1:" + VinProfile[VinProfileIndex, 0].ToString("F2").Replace(".", ",") + "\\n");
-                LOG_TXT("Enviando comando de tensão: " + "VSET1:" + VinProfile[VinProfileIndex, 0].ToString("F2").Replace(".", ",") + "\\n");
+                Thread.Sleep(50);
+                SendCommand("VSET1:" + VinProfile[VinProfileIndex, 0].ToString("F2").Replace(".", ",") + "\\n");
+                
+                LOG_TXT("Enviando comando de tensão 2x: " + "VSET1:" + VinProfile[VinProfileIndex, 0].ToString("F2").Replace(".", ",") + "\\n");
                 Console.WriteLine("Enviando comando de tensão: " + "VSET1:" + VinProfile[VinProfileIndex, 0].ToString("F2").Replace(".", ",") + "\\n");
             }
 
