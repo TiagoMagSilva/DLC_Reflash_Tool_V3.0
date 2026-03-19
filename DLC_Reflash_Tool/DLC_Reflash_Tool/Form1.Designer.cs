@@ -62,6 +62,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.lblSTATUS_Final = new System.Windows.Forms.Label();
             this.timerBEEP = new System.Windows.Forms.Timer(this.components);
+            this.timerChecoutAnimaçãoFinal = new System.Windows.Forms.Timer(this.components);
             this.GroupBox_SerialCOM.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -377,6 +378,11 @@
             this.timerBEEP.Interval = 400;
             this.timerBEEP.Tick += new System.EventHandler(this.timerBEEP_Tick);
             // 
+            // timerChecoutAnimaçãoFinal
+            // 
+            this.timerChecoutAnimaçãoFinal.Interval = 700;
+            this.timerChecoutAnimaçãoFinal.Tick += new System.EventHandler(this.timerChecoutAnimaçãoFinal_Tick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -447,6 +453,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label lblSTATUS_Final;
         private System.Windows.Forms.Timer timerBEEP;
+        private System.Windows.Forms.Timer timerChecoutAnimaçãoFinal;
     }
 }
 

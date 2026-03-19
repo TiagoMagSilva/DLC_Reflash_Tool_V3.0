@@ -45,14 +45,16 @@ namespace DLC_Reflash_Tool
 
         double[,] VinProfile = new double[5, 2]; //Tensão(V) ; Tempo(ms)
         UInt16 VinProfileIndex = 0;
-        int ProcessoID_Channel0 = 0, ProcessoID_Channel1 = 0;
+        int ProcessoID_Channel0 = 0, ProcessoID_Channel1 = 0, DetecçãoCorrenteCounter = 0;
 
         Boolean GravaçãoON = false, DLC_Modo_Boot = false, ConexãoAutomática = false, FonteConectada = false;
-        Boolean ForçarBootMode = false, DLC_WRITING_PROCESS = false;
+        Boolean ForçarBootMode = false, DLC_WRITING_PROCESS = false, Aux_AnimaçãoFinal = false;
 
         Double output_Current = 0.0;
 
         UInt16 IndexPortaSerialConexaoAutomatica = 0;
+
+        private FormAlertaFinalização formAlerta;
         
         enum portaSerialCOM_Request
         {
@@ -1213,6 +1215,7 @@ namespace DLC_Reflash_Tool
 
         void IniciarProcessoGravacao()
         {
+            DetecçãoCorrenteCounter = 0;
             VinProfileIndex = 0;
             GravaçãoON = true;
             TimerVoltageAnimation.Interval = 100;
@@ -1228,7 +1231,7 @@ namespace DLC_Reflash_Tool
             CarregarPerfilAnimação();
 
             txt_Info_AppendText("Animação de Vin iniciada.");
-            lblSTATUS_Final.Text = "Aguarde";
+            lblSTATUS_Final.Text = "Aguarde modo Boot";
             lblSTATUS_Final.ForeColor = Color.Blue;
             timerBEEP.Stop();
 
@@ -1724,12 +1727,24 @@ namespace DLC_Reflash_Tool
                                         {
                                             lblSTATUS_Final.Text = ">>> OK <<<";
                                             lblSTATUS_Final.ForeColor = Color.Green;
+                                            timerChecoutAnimaçãoFinal.Start();
+                                            if (formAlerta == null || formAlerta.IsDisposed)
+                                            {
+                                                formAlerta = new FormAlertaFinalização();
+                                                formAlerta.Show();                                                
+                                            }
                                         }));
                                     }
                                     else
                                     {
                                         lblSTATUS_Final.Text = ">>> OK <<<";
                                         lblSTATUS_Final.ForeColor = Color.Green;
+                                        timerChecoutAnimaçãoFinal.Start();
+                                        if (formAlerta == null || formAlerta.IsDisposed)
+                                        {
+                                            formAlerta = new FormAlertaFinalização();
+                                            formAlerta.Show();                                            
+                                        }
                                     }
 
                                     if (lblEtapa.InvokeRequired)
@@ -2432,6 +2447,126 @@ namespace DLC_Reflash_Tool
         {
             Task.Run(() => Console.Beep(1000, 300));
             //Console.WriteLine("Timer tick");
+        }
+
+        private void LigarSaida1()
+        {
+            if (cbxModeloFonte.SelectedIndex == 0 || cbxModeloFonte.SelectedIndex == 2) //TDK-Lambda e Keithley
+            {
+                MontarPacoteSerial((UInt16)portaSerialCOM_Request.OUTCommand, 1);
+            }
+            else if (cbxModeloFonte.SelectedIndex == 1)//KEITHLEY
+            {
+                try
+                {
+                    SendCommand("OUTP ON");
+                    //MessageBox.Show("Saída ligada!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    AppendToTxtInfoSafe("Saída ligada!");
+                }
+                catch (Exception ex)
+                {
+                    //MessageBox.Show($"Erro ao ligar saída: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    AppendToTxtInfoSafe($"Erro ao ligar saída: {ex.Message}");
+                }
+            }
+            else if (cbxModeloFonte.SelectedIndex == 3) //AFR 3005P
+            {
+                //SendCommand("OUTPUT1\\n");                
+                SendCommand("VSET1:13,500\\n");
+                Thread.Sleep(200);
+                //AppendToTxtInfoSafe("Saída ligada!");
+            }
+        }
+
+        private void DesligarSaida1()
+        {
+            if (cbxModeloFonte.SelectedIndex == 0 || cbxModeloFonte.SelectedIndex == 2) //TDK-Lambda
+                MontarPacoteSerial((UInt16)portaSerialCOM_Request.OUTCommand, 0);
+            else if (cbxModeloFonte.SelectedIndex == 1)//KEITHLEY
+            {
+                try
+                {
+                    SendCommand("OUTP OFF");
+                    //MessageBox.Show("Saída ligada!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    AppendToTxtInfoSafe("Saída desligada!");
+                }
+                catch (Exception ex)
+                {
+                    //MessageBox.Show($"Erro ao ligar saída: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    AppendToTxtInfoSafe($"Erro ao desligar saída: {ex.Message}");
+                }
+            }
+            else if (cbxModeloFonte.SelectedIndex == 3) //AFS
+            {
+                //SendCommand("OUTPUT0\\n");
+                //AppendToTxtInfoSafe("Saída desligada!");
+                SendCommand("VSET1:0,000\\n");
+            }
+        }
+
+        private void timerChecoutAnimaçãoFinal_Tick(object sender, EventArgs e)
+        {
+            if (Aux_AnimaçãoFinal)
+            {
+                LigarSaida1();
+
+                Task.Delay(100).Wait(); //Aguarda um pouco para garantir que a fonte ligou antes de solicitar corrente, evitando leituras muito rápidas da corrente.
+
+                if (cbxModeloFonte.SelectedIndex == 0 || cbxModeloFonte.SelectedIndex == 2)//TDK-Lambda
+                {                    
+                    //Solicitando corrente pra saber se entramos no modo BOOT;
+                    MontarPacoteSerial((UInt16)portaSerialCOM_Request.MCRequest, 0); //Não possui valor como argumento!                    
+                    Task.Delay(20).Wait(); //Aguarda um pouco para garantir que a fonte respondeu antes de solicitar novamente no TimerCheckBootMode, evitando leituras muito rápidas da corrente.
+                }
+                else if (cbxModeloFonte.SelectedIndex == 1) //KEITHLEY
+                {
+                    string current = SendCommand("MEAS:CURR?").Trim();
+                    if (double.TryParse(current, NumberStyles.Any,
+                        CultureInfo.InvariantCulture, out double currValue))
+                    {
+                        output_Current = currValue;
+                        Console.WriteLine("Corrente medida: " + output_Current.ToString("F4", CultureInfo.InvariantCulture) + " A");
+                    }
+                }
+                else if (cbxModeloFonte.SelectedIndex == 3)//AFR
+                {
+                    string current = SendCommand("IOUT1?\\n").Trim();
+                    if (double.TryParse(current, NumberStyles.Any,
+                        CultureInfo.InvariantCulture, out double currValue))
+                    {
+                        output_Current = currValue;
+                        Console.WriteLine("Corrente medida: " + output_Current.ToString("F3", CultureInfo.InvariantCulture) + " A");
+                        LOG_TXT("Corrente medida: " + output_Current.ToString("F3", CultureInfo.InvariantCulture) + " A");
+                    }
+                }
+
+                if(output_Current < 0.7)
+                {
+                    DetecçãoCorrenteCounter++;
+
+                    if(DetecçãoCorrenteCounter > 3)
+                    {
+                        timerChecoutAnimaçãoFinal.Stop();
+                        Aux_AnimaçãoFinal = false;
+                        formAlerta.Close();
+                        formAlerta = null;
+                        DesligarSaida1();
+                        lblSTATUS_Final.Text = "Conecte nova peça";
+                        lblSTATUS_Final.ForeColor = Color.Blue;
+                        DetecçãoCorrenteCounter = 0;
+                    }                    
+                }
+                else
+                {
+                    DetecçãoCorrenteCounter = 0;
+                }
+                output_Current = 0;
+            }
+            else
+            {
+                DesligarSaida1();
+            }
+            Aux_AnimaçãoFinal = !Aux_AnimaçãoFinal;   
         }
 
         private void btnOUT3_OFF_Click(object sender, EventArgs e)
