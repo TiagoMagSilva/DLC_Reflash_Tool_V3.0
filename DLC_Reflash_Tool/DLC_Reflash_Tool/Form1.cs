@@ -1228,6 +1228,9 @@ namespace DLC_Reflash_Tool
             CarregarPerfilAnimação();
 
             txt_Info_AppendText("Animação de Vin iniciada.");
+            lblSTATUS_Final.Text = "Aguarde";
+            lblSTATUS_Final.ForeColor = Color.Blue;
+            timerBEEP.Stop();
 
             if (cbxModeloFonte.SelectedIndex == 0 || cbxModeloFonte.SelectedIndex == 2)//TDK-Lambda
                 MontarPacoteSerial((UInt16)portaSerialCOM_Request.OUTCommand, 1);
@@ -1358,11 +1361,30 @@ namespace DLC_Reflash_Tool
                                 LOG_TXT("Canal " + channel.ToString() + ". Standard Output: " + outputline);
                                 // ANÁLISE DE STRINGS AQUI:
 
+                                //// ERRO - ERRO - ERRO - ERRO 
+
                                 if (outputline.Contains("Login failed (KO) !!!"))
                                 {
-                                    Task.Run(() => Console.Beep(800, 3000));
+                                    //Task.Run(() => Console.Beep(800, 3000));
                                     AppendToTxtInfoSafe("Canal " + channel.ToString() + " >>> DLC não respondeu <<<");
                                     LOG_TXT("Canal " + channel.ToString() + " >>> DLC não respondeu <<<");
+
+                                    if (lblSTATUS_Final.InvokeRequired)
+                                    {
+                                        lblSTATUS_Final.Invoke(new Action(() =>
+                                        {
+                                            lblSTATUS_Final.Text = "Reinicie gravação";
+                                            lblSTATUS_Final.ForeColor = Color.Red;
+                                            timerBEEP.Start();
+                                        }));
+                                    }
+                                    else
+                                    {
+                                        lblSTATUS_Final.Text = "Reinicie gravação";
+                                        lblSTATUS_Final.ForeColor = Color.Red;
+                                        timerBEEP.Start();
+                                    }
+
                                     proc.Kill();
                                     proc.Dispose();
 
@@ -1378,7 +1400,7 @@ namespace DLC_Reflash_Tool
                                             btn_Iniciar_Gravação.Enabled = true;
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
-                                            lblEtapa.Text = "Finalizado com falha";
+                                            lblEtapa.Text = "Finalizado com falha";                                            
                                         }));
                                     }
                                     else
@@ -1386,15 +1408,31 @@ namespace DLC_Reflash_Tool
                                         btn_Iniciar_Gravação.Enabled = true;
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
-                                        lblEtapa.Text = "Finalizado com falha";
+                                        lblEtapa.Text = "Finalizado com falha";                                        
                                     }
                                 }                                
 
                                 if (outputline.Contains("Flashing failed (KO) !!!"))
                                 {
-                                    Task.Run(() => Console.Beep(800, 3000));
+                                    if (lblSTATUS_Final.InvokeRequired)
+                                    {
+                                        lblSTATUS_Final.Invoke(new Action(() =>
+                                        {
+                                            lblSTATUS_Final.Text = "Reinicie gravação";
+                                            lblSTATUS_Final.ForeColor = Color.Red;
+                                            timerBEEP.Start();
+                                        }));
+                                    }
+                                    else
+                                    {
+                                        lblSTATUS_Final.Text = "Reinicie gravação";
+                                        lblSTATUS_Final.ForeColor = Color.Red;
+                                        timerBEEP.Start();
+                                    }
+                                    //Task.Run(() => Console.Beep(800, 3000));
                                     AppendToTxtInfoSafe("Canal " + channel.ToString() + " >>> Falha na gravação. <<<");
                                     LOG_TXT("Canal " + channel.ToString() + " >>> Falha na gravação. <<<");
+
                                     if (btn_Iniciar_Gravação.InvokeRequired)
                                     {
                                         btn_Iniciar_Gravação.Invoke(new Action(() =>
@@ -1402,7 +1440,7 @@ namespace DLC_Reflash_Tool
                                             btn_Iniciar_Gravação.Enabled = true;
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
-                                            lblEtapa.Text = "Finalizado com falha";
+                                            lblEtapa.Text = "Finalizado com falha";                                            
                                         }));
                                     }
                                     else
@@ -1410,7 +1448,7 @@ namespace DLC_Reflash_Tool
                                         btn_Iniciar_Gravação.Enabled = true;
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
-                                        lblEtapa.Text = "Finalizado com falha";
+                                        lblEtapa.Text = "Finalizado com falha";                                        
                                     }
                                     proc.Kill();
                                     proc.Dispose();
@@ -1423,9 +1461,25 @@ namespace DLC_Reflash_Tool
 
                                 if (outputline.Contains("ECU is not programmed successfully (KO)"))
                                 {
-                                    Task.Run(() => Console.Beep(800, 3000));
+                                    if (lblSTATUS_Final.InvokeRequired)
+                                    {
+                                        lblSTATUS_Final.Invoke(new Action(() =>
+                                        {
+                                            lblSTATUS_Final.Text = "Reinicie gravação";
+                                            lblSTATUS_Final.ForeColor = Color.Red;
+                                            timerBEEP.Start();
+                                        }));
+                                    }
+                                    else
+                                    {
+                                        lblSTATUS_Final.Text = "Reinicie gravação";
+                                        lblSTATUS_Final.ForeColor = Color.Red;
+                                        timerBEEP.Start();
+                                    }
+                                    //Task.Run(() => Console.Beep(800, 3000));
                                     AppendToTxtInfoSafe("Canal " + channel.ToString() + " >>> DLC não foi regravada! Reinicie o processo. <<<");
                                     LOG_TXT("Canal " + channel.ToString() + " >>> DLC não foi regravada! Reinicie o processo. <<<<<<");
+
                                     if (btn_Iniciar_Gravação.InvokeRequired)
                                     {
                                         btn_Iniciar_Gravação.Invoke(new Action(() =>
@@ -1433,7 +1487,7 @@ namespace DLC_Reflash_Tool
                                             btn_Iniciar_Gravação.Enabled = true;
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
-                                            lblEtapa.Text = "Finalizado com falha";
+                                            lblEtapa.Text = "Finalizado com falha";                                            
                                         }));
                                     }
                                     else
@@ -1441,7 +1495,7 @@ namespace DLC_Reflash_Tool
                                         btn_Iniciar_Gravação.Enabled = true;
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
-                                        lblEtapa.Text = "Finalizado com falha";
+                                        lblEtapa.Text = "Finalizado com falha";                                        
                                     }
                                     proc.Kill();
                                     proc.Dispose();
@@ -1454,9 +1508,26 @@ namespace DLC_Reflash_Tool
 
                                 if (outputline.Contains("Upload RAM application failed (KO) !!!"))
                                 {
-                                    Task.Run(() => Console.Beep(800, 3000));
+                                    if (lblSTATUS_Final.InvokeRequired)
+                                    {
+                                        lblSTATUS_Final.Invoke(new Action(() =>
+                                        {
+                                            lblSTATUS_Final.Text = "Reinicie gravação";
+                                            lblSTATUS_Final.ForeColor = Color.Red;
+                                            timerBEEP.Start();
+                                        }));
+                                    }
+                                    else
+                                    {
+                                        lblSTATUS_Final.Text = "Reinicie gravação";
+                                        lblSTATUS_Final.ForeColor = Color.Red;
+                                        timerBEEP.Start();
+                                    }
+
+                                    //Task.Run(() => Console.Beep(800, 3000));
                                     AppendToTxtInfoSafe("Canal " + channel.ToString() + " >>> Falha no upload <<<");
                                     LOG_TXT("Canal " + channel.ToString() + " >>> Falha no upload <<<");
+                                                                        
                                     if (btn_Iniciar_Gravação.InvokeRequired)
                                     {
                                         btn_Iniciar_Gravação.Invoke(new Action(() =>
@@ -1464,7 +1535,7 @@ namespace DLC_Reflash_Tool
                                             btn_Iniciar_Gravação.Enabled = true;
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
-                                            lblEtapa.Text = "Finalizado com falha";
+                                            lblEtapa.Text = "Finalizado com falha";                                            
                                         }));
                                     }
                                     else
@@ -1472,7 +1543,7 @@ namespace DLC_Reflash_Tool
                                         btn_Iniciar_Gravação.Enabled = true;
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
-                                        lblEtapa.Text = "Finalizado com falha";
+                                        lblEtapa.Text = "Finalizado com falha";                                        
                                     }
                                     proc.Kill();
                                     proc.Dispose();
@@ -1485,9 +1556,25 @@ namespace DLC_Reflash_Tool
 
                                 if (outputline.Contains("No CAN hardware found!"))
                                 {
-                                    Task.Run(() => Console.Beep(800, 3000));
+                                    if (lblSTATUS_Final.InvokeRequired)
+                                    {
+                                        lblSTATUS_Final.Invoke(new Action(() =>
+                                        {
+                                            lblSTATUS_Final.Text = "Reinicie gravação";
+                                            lblSTATUS_Final.ForeColor = Color.Red;
+                                            timerBEEP.Start();
+                                        }));
+                                    }
+                                    else
+                                    {
+                                        lblSTATUS_Final.Text = "Reinicie gravação";
+                                        lblSTATUS_Final.ForeColor = Color.Red;
+                                        timerBEEP.Start();
+                                    }         
+
                                     AppendToTxtInfoSafe("Canal " + channel.ToString() + " >>> VECTOR não encontrado <<<");
                                     LOG_TXT("Canal " + channel.ToString() + " >>> VECTOR não encontrado <<<");
+
                                     if (btn_Iniciar_Gravação.InvokeRequired)
                                     {
                                         btn_Iniciar_Gravação.Invoke(new Action(() =>
@@ -1495,7 +1582,7 @@ namespace DLC_Reflash_Tool
                                             btn_Iniciar_Gravação.Enabled = true;
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
-                                            lblEtapa.Text = "Finalizado com falha";
+                                            lblEtapa.Text = "Finalizado com falha";                                            
                                         }));
                                     }
                                     else
@@ -1503,7 +1590,7 @@ namespace DLC_Reflash_Tool
                                         btn_Iniciar_Gravação.Enabled = true;
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
-                                        lblEtapa.Text = "Finalizado com falha";
+                                        lblEtapa.Text = "Finalizado com falha";                                        
                                     }
                                     proc.Kill();
                                     proc.Dispose();
@@ -1513,6 +1600,8 @@ namespace DLC_Reflash_Tool
                                     else if (channel == 1)
                                         FecharProcessoPorId(ProcessoID_Channel1);
                                 }
+
+                                //// OK - OK - OK - OK 
 
                                 if (outputline.Contains("ECU responding (OK)"))
                                 {
@@ -1576,21 +1665,37 @@ namespace DLC_Reflash_Tool
                                                                 
                                 if (outputline.Contains("Write: ["))
                                 {
-                                    if (lblEtapa.InvokeRequired)
+                                    if (lblSTATUS_Final.InvokeRequired)
                                     {
-                                        lblEtapa.Invoke(new Action(() =>
+                                        lblSTATUS_Final.Invoke(new Action(() =>
                                         {
-                                            lblEtapa.Text = "Etapa: 5/6 Gravando novo SW na DLC";
+                                            lblSTATUS_Final.Text = "Gravando";
+                                            lblSTATUS_Final.ForeColor = Color.Blue;
+                                            DLC_WRITING_PROCESS = true;
                                         }));
                                     }
                                     else
                                     {
-                                        lblEtapa.Text = "Etapa: 5/6 Gravando novo SW na DLC";
+                                        lblSTATUS_Final.Text = "Gravando";
+                                        lblSTATUS_Final.ForeColor = Color.Blue;
+                                        DLC_WRITING_PROCESS = true;
+                                    }
+
+                                    if (lblEtapa.InvokeRequired)
+                                    {
+                                        lblEtapa.Invoke(new Action(() =>
+                                        {
+                                            lblEtapa.Text = "Etapa: 5/6 Gravando novo SW na DLC";                                            
+                                        }));
+                                    }
+                                    else
+                                    {
+                                        lblEtapa.Text = "Etapa: 5/6 Gravando novo SW na DLC";                                        
                                     }
 
                                     AppendToTxtInfoSafe("Canal " + channel.ToString() + ". Etapa: 5/6 Gravando novo SW na DLC");
                                     LOG_TXT("Canal " + channel.ToString() + ". Etapa: 5/6 Gravando novo SW na DLC");
-                                    DLC_WRITING_PROCESS = true;
+                                                                        
                                 }
 
                                 if (outputline.Contains("Erase: ["))
@@ -1613,24 +1718,38 @@ namespace DLC_Reflash_Tool
 
                                 if (outputline.Contains("ECU is programmed successfully (OK)"))
                                 {
+                                    if (lblSTATUS_Final.InvokeRequired)
+                                    {
+                                        lblSTATUS_Final.Invoke(new Action(() =>
+                                        {
+                                            lblSTATUS_Final.Text = ">>> OK <<<";
+                                            lblSTATUS_Final.ForeColor = Color.Green;
+                                        }));
+                                    }
+                                    else
+                                    {
+                                        lblSTATUS_Final.Text = ">>> OK <<<";
+                                        lblSTATUS_Final.ForeColor = Color.Green;
+                                    }
+
                                     if (lblEtapa.InvokeRequired)
                                     {
                                         lblEtapa.Invoke(new Action(() =>
-                                        {
+                                        {                                            
                                             lblEtapa.Text = "Etapa: 6/6 Finalizado com sucesso";
                                         }));
                                     }
                                     else
                                     {
-                                        lblEtapa.Text = "Etapa: 6/6 Finalizado com sucesso";
+                                        lblEtapa.Text = "Etapa: 6/6 Finalizado com sucesso";                                        
                                     }
 
                                     Task.Run(() => Console.Beep(800, 3000));
                                     
                                     AppendToTxtInfoSafe("Canal " + channel.ToString() + ". DLC programada com sucesso!");
                                     LOG_TXT("Canal " + channel.ToString() + ". DLC programada com sucesso!");
-                                    TimerContador.Stop();
-                                    
+                                    TimerContador.Stop();   
+
                                     proc.Kill();
                                     proc.Dispose();
 
@@ -2206,6 +2325,7 @@ namespace DLC_Reflash_Tool
 
         private void btnCancelarProcesso_Click(object sender, EventArgs e)
         {
+            timerBEEP.Stop();
             FecharProcessoPorId(ProcessoID_Channel0);
             FecharProcessoPorId(ProcessoID_Channel1);
         }
@@ -2308,6 +2428,12 @@ namespace DLC_Reflash_Tool
             }
         }
 
+        private void timerBEEP_Tick(object sender, EventArgs e)
+        {
+            Task.Run(() => Console.Beep(1000, 300));
+            //Console.WriteLine("Timer tick");
+        }
+
         private void btnOUT3_OFF_Click(object sender, EventArgs e)
         {
             if (cbxModeloFonte.SelectedIndex == 2) //MPS
@@ -2320,7 +2446,7 @@ namespace DLC_Reflash_Tool
         {
             ForçarBootMode = true;
             TimerForceBootMode.Stop();
-            AppendToTxtInfoSafe("BOOT não detectado. Forçando gravação.");
+            AppendToTxtInfoSafe("Entrando em BOOT.");
         }
             
         private void TimerContador_Tick(object sender, EventArgs e)
@@ -2443,6 +2569,8 @@ namespace DLC_Reflash_Tool
                     output_Current = 0;
                     DLC_Modo_Boot = true;
                     TimerForceBootMode.Stop();
+                    DLC_WRITING_PROCESS = false;
+                    lblTimer.Text = "Tempo: 00:00";
 
                     string D4X_DL_SWSB_File = "D4X_DL000_SWSB_0210.hex";
                     string D4X_ST_SW_File = lblSWName.Text;
@@ -2472,12 +2600,14 @@ namespace DLC_Reflash_Tool
                     output_Current = currValue;
                     Console.WriteLine("Corrente medida: " + output_Current.ToString("F3", CultureInfo.InvariantCulture) + " A");
                 }
-                if (((output_Current > 0.07 && output_Current < 0.15) || ForçarBootMode) && !DLC_Modo_Boot)
+                if (((output_Current > 0.05 && output_Current < 0.15) || ForçarBootMode) && !DLC_Modo_Boot)
                 {
                     AppendToTxtInfoSafe("Iniciando processo de gravação. Aguarde alguns segundos...");
                     output_Current = 0;
                     DLC_Modo_Boot = true;
                     TimerForceBootMode.Stop();
+                    DLC_WRITING_PROCESS = false;
+                    lblTimer.Text = "Tempo: 00:00";
 
                     string D4X_DL_SWSB_File = "D4X_DL000_SWSB_0210.hex";
                     string D4X_ST_SW_File = lblSWName.Text;
@@ -2499,8 +2629,8 @@ namespace DLC_Reflash_Tool
                 }
             }
         }
-
-        async Task BeepIntervalado(int frequencia = 800, int duracao = 200, int intervalo = 500, int repeticoes = 5)
+        
+        async Task BeepIntervalado(int frequencia = 1000, int duracao = 200, int intervalo = 100, int repeticoes = 200)
         {
             beepCancellationToken = new CancellationTokenSource();
 

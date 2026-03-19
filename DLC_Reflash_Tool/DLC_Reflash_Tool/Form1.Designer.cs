@@ -60,6 +60,8 @@
             this.cbkGravaçãoDupla = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.lblSTATUS_Final = new System.Windows.Forms.Label();
+            this.timerBEEP = new System.Windows.Forms.Timer(this.components);
             this.GroupBox_SerialCOM.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -147,7 +149,7 @@
             this.txt_Info.Name = "txt_Info";
             this.txt_Info.ReadOnly = true;
             this.txt_Info.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txt_Info.Size = new System.Drawing.Size(500, 129);
+            this.txt_Info.Size = new System.Drawing.Size(500, 131);
             this.txt_Info.TabIndex = 21;
             // 
             // btn_Iniciar_Gravação
@@ -190,7 +192,7 @@
             // 
             // btnLimparInfo
             // 
-            this.btnLimparInfo.Location = new System.Drawing.Point(445, 437);
+            this.btnLimparInfo.Location = new System.Drawing.Point(441, 439);
             this.btnLimparInfo.Name = "btnLimparInfo";
             this.btnLimparInfo.Size = new System.Drawing.Size(75, 23);
             this.btnLimparInfo.TabIndex = 31;
@@ -232,9 +234,10 @@
             // lblTimer
             // 
             this.lblTimer.AutoSize = true;
-            this.lblTimer.Location = new System.Drawing.Point(438, 284);
+            this.lblTimer.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTimer.Location = new System.Drawing.Point(381, 271);
             this.lblTimer.Name = "lblTimer";
-            this.lblTimer.Size = new System.Drawing.Size(73, 13);
+            this.lblTimer.Size = new System.Drawing.Size(135, 25);
             this.lblTimer.TabIndex = 37;
             this.lblTimer.Text = "Tempo: 00:00";
             // 
@@ -275,7 +278,7 @@
             this.groupBox3.Controls.Add(this.btnOUT2_ON);
             this.groupBox3.Controls.Add(this.btnOUT1_OFF);
             this.groupBox3.Controls.Add(this.btnOUT1_ON);
-            this.groupBox3.Location = new System.Drawing.Point(250, 168);
+            this.groupBox3.Location = new System.Drawing.Point(250, 155);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(224, 113);
             this.groupBox3.TabIndex = 43;
@@ -341,7 +344,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label5.Location = new System.Drawing.Point(12, 466);
+            this.label5.Location = new System.Drawing.Point(12, 540);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(474, 13);
             this.label5.TabIndex = 41;
@@ -352,18 +355,34 @@
             // 
             this.label4.AutoSize = true;
             this.label4.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label4.Location = new System.Drawing.Point(12, 450);
+            this.label4.Location = new System.Drawing.Point(12, 526);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(427, 13);
             this.label4.TabIndex = 41;
             this.label4.Text = "Uma janela do CMD será aberta automaticamente. Ao final do processo, ela também s" +
     "erá";
             // 
+            // lblSTATUS_Final
+            // 
+            this.lblSTATUS_Final.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSTATUS_Final.Location = new System.Drawing.Point(0, 465);
+            this.lblSTATUS_Final.Name = "lblSTATUS_Final";
+            this.lblSTATUS_Final.Size = new System.Drawing.Size(523, 55);
+            this.lblSTATUS_Final.TabIndex = 45;
+            this.lblSTATUS_Final.Text = "-----------------------";
+            this.lblSTATUS_Final.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // timerBEEP
+            // 
+            this.timerBEEP.Interval = 400;
+            this.timerBEEP.Tick += new System.EventHandler(this.timerBEEP_Tick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(523, 488);
+            this.ClientSize = new System.Drawing.Size(523, 557);
+            this.Controls.Add(this.lblSTATUS_Final);
             this.Controls.Add(this.cbkGravaçãoDupla);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.btnCancelarProcesso);
@@ -426,6 +445,8 @@
         private System.Windows.Forms.Label lblSWName;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblSTATUS_Final;
+        private System.Windows.Forms.Timer timerBEEP;
     }
 }
 
