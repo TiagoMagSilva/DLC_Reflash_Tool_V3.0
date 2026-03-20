@@ -48,7 +48,7 @@ namespace DLC_Reflash_Tool
         int ProcessoID_Channel0 = 0, ProcessoID_Channel1 = 0, DetecçãoCorrenteCounter = 0;
 
         Boolean GravaçãoON = false, DLC_Modo_Boot = false, ConexãoAutomática = false, FonteConectada = false;
-        Boolean ForçarBootMode = false, DLC_WRITING_PROCESS = false, Aux_AnimaçãoFinal = false;
+        Boolean ForçarBootMode = false, DLC_WRITING_PROCESS = false, Aux_AnimaçãoFinal = false, Fase1FinalizaçãoOK = false;
 
         Double output_Current = 0.0;
 
@@ -1604,7 +1604,7 @@ namespace DLC_Reflash_Tool
                                         FecharProcessoPorId(ProcessoID_Channel1);
                                 }
 
-                                //// OK - OK - OK - OK 
+                                // OK - OK - OK - OK 
 
                                 if (outputline.Contains("ECU responding (OK)"))
                                 {
@@ -1643,22 +1643,26 @@ namespace DLC_Reflash_Tool
                                 }
 
                                 if (outputline.Contains("CRC check passed"))
-                                {
-                                    String frase;
-                                    if(DLC_WRITING_PROCESS)
-                                        frase = "Etapa: 6/6 CRC OK";
-                                    else
-                                        frase = "Etapa: 3/6 CRC OK";
-
+                                {      
                                     if (lblEtapa.InvokeRequired)
                                     {
                                         lblEtapa.Invoke(new Action(() =>
                                         {
+                                            String frase;
+                                            if (DLC_WRITING_PROCESS)
+                                                frase = "Etapa: 6/6 CRC OK";
+                                            else
+                                                frase = "Etapa: 3/6 CRC OK";
                                             lblEtapa.Text = frase;
                                         }));
                                     }
                                     else
                                     {
+                                        String frase;
+                                        if (DLC_WRITING_PROCESS)
+                                            frase = "Etapa: 6/6 CRC OK";
+                                        else
+                                            frase = "Etapa: 3/6 CRC OK";
                                         lblEtapa.Text = frase;
                                     }
 
@@ -1801,6 +1805,7 @@ namespace DLC_Reflash_Tool
                                     }
                                 }
                                 
+                                /*
                                 if (outputline.Contains("=>"))
                                 {
                                     if(DLC_WRITING_PROCESS)
@@ -1813,11 +1818,10 @@ namespace DLC_Reflash_Tool
                                         {
                                             lblEtapa.Text = "Etapa: 5/6 Gravando novo SW na DLC (" + outputline.Substring(outputline.Length - 4) + ")";
                                         }
-                                    }
-                                   
+                                    }                                   
                                     //AppendToTxtInfoSafe(outputline);
                                     //LOG_TXT("Tempo total de gravação: " + outputline.Substring(outputline.Length - 4));
-                                }                                
+                                } */                               
 
                                 /*
                                 // 2. Procura por canais VN1640A
