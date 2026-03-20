@@ -112,7 +112,21 @@ RESPOSTA Desligada
 SEND
 13
 Resposta 100
-31 30 30
+31 30 30 0A
+0
+5
+
+SEND
+14
+Resposta 110
+31 31 30 0A
+0
+5
+
+SEND
+15
+Corrente
+30 2E 30 35 32 20 0A
 0
 5
 
@@ -120,7 +134,43 @@ RECEIVE
 0
 STATUS
 53 54 41 54 55 53 3F 5C 6E
-12
+14
+1
+COMMENT 
+0
+1
+0
+0
+
+RECEIVE
+1
+Solicitação para LIgar Fonte
+4F 55 54 50 55 54 31 5C 6E
+14
+1
+COMMENT 
+0
+1
+0
+0
+
+RECEIVE
+2
+Solicitação para desligar fonte
+4F 55 54 50 55 54 30 5C 6E
+13
+1
+COMMENT 
+0
+1
+0
+0
+
+RECEIVE
+3
+Solicitação COrrente
+49 4F 55 54 31 3F 5C 6E
+15
 1
 COMMENT 
 0

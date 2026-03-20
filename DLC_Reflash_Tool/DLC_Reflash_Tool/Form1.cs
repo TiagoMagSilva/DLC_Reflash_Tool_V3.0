@@ -391,79 +391,7 @@ namespace DLC_Reflash_Tool
                 MessageBox.Show("Não foi possível criar o arquivo de dados da porta serial!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        /*
-        void Salvar_Dados_D4X_DL_SWSB()
-        {
-            try
-            {
-                if (File.Exists(path_CONFIG + "D4X_DL_SWSB" + ".txt"))
-                {
-                    File.WriteAllText(path_CONFIG + "D4X_DL_SWSB" + ".txt", String.Empty);
-
-                    using (var tw = new StreamWriter(path_CONFIG + "D4X_DL_SWSB" + ".txt", true))
-                    {
-                        tw.WriteLine(txt_Caminho_DL_SWSB.Text);
-                    }
-                }
-                else
-                {
-                    if (!File.Exists(path_CONFIG + "D4X_DL_SWSB" + ".txt"))
-                    {
-                        File.Create(path_CONFIG + "D4X_DL_SWSB" + ".txt").Dispose();
-
-                        File.WriteAllText(path_CONFIG + "D4X_DL_SWSB" + ".txt", String.Empty);
-
-                        using (TextWriter tw = new StreamWriter(path_CONFIG + "D4X_DL_SWSB" + ".txt"))
-                        {
-                            tw.WriteLine(txt_Caminho_DL_SWSB.Text);
-                        }
-                    }
-                }
-                LOG_TXT("Salvando D4X_DL_SWSB file path:  " + txt_Caminho_DL_SWSB.Text);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Não foi possível salver o caminho para arquivo D4X_DL_SWSB!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }*/
-
-        /*
-        void Salvar_Dados_D4X_ST_SW()
-        {
-            try
-            {
-                if (File.Exists(path_CONFIG + "D4X_ST_SW" + ".txt"))
-                {
-                    File.WriteAllText(path_CONFIG + "D4X_ST_SW" + ".txt", String.Empty);
-
-                    using (var tw = new StreamWriter(path_CONFIG + "D4X_ST_SW" + ".txt", true))
-                    {
-                        tw.WriteLine(txt_Caminho_ST_SW.Text);
-                    }
-                }
-                else
-                {
-                    if (!File.Exists(path_CONFIG + "D4X_ST_SW" + ".txt"))
-                    {
-                        File.Create(path_CONFIG + "D4X_ST_SW" + ".txt").Dispose();
-
-                        File.WriteAllText(path_CONFIG + "D4X_ST_SW" + ".txt", String.Empty);
-
-                        using (TextWriter tw = new StreamWriter(path_CONFIG + "D4X_ST_SW" + ".txt"))
-                        {
-                            tw.WriteLine(txt_Caminho_ST_SW.Text);
-                        }
-                    }
-                }
-                LOG_TXT("Salvando D4X_ST_SW file path:  " + txt_Caminho_ST_SW.Text);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Não foi possível salvar o caminho para arquivo D4X_ST_SW!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }*/
-
+         
         void LOG_TXT(String MSG)
         {
             String NOME_LOG = System.DateTime.Today.ToString("yyMMdd");
@@ -931,6 +859,7 @@ namespace DLC_Reflash_Tool
                 }
             }*/
         }
+        
         void MontarPacoteSerial(UInt16 TipoPacote, double value)
         {
             RequestIndex = TipoPacote;            
@@ -1226,6 +1155,10 @@ namespace DLC_Reflash_Tool
             TimerForceBootMode.Stop();
             DLC_Modo_Boot = false;
             DLC_WRITING_PROCESS = false;
+            cbkGravaçãoDupla.Enabled = false;
+
+            TempoDecorrido = 0;
+            TimerContador.Start();
 
             //Implementar a lógica para iniciar o processo de gravação, utilizando os arquivos e a porta serial selecionados.
             CarregarPerfilAnimação();
@@ -1247,13 +1180,14 @@ namespace DLC_Reflash_Tool
                 }
                 else
                 {
-                    AppendToTxtInfoSafe("Falha ao ligar a saída da fonte.");
+                    AppendToTxtInfoSafe("Falha ao ligar a saída da fonte. Retorno: " + outputState);
+                    btnCancelarProcesso.PerformClick();
                 }
             } 
             
             else if(cbxModeloFonte.SelectedIndex == 3) //AFR
             {
-                Console.WriteLine("Iniciando para AFR");
+                Console.WriteLine("Iniciando para AFR");                
 
                 //Tentando contornar o erro da fonte 3...
                 //parece que a fonte não aceita o comando de ligar a saída na primeira vez,
@@ -1286,11 +1220,9 @@ namespace DLC_Reflash_Tool
                 else
                 {
                     AppendToTxtInfoSafe("Falha ao ligar a saída da fonte. Retorno: " + outputState);
+                    btnCancelarProcesso.PerformClick();
                 }
-            }
-
-            TempoDecorrido = 0;
-            TimerContador.Start();
+            }           
 
             //MontarPacoteSerial((UInt16)portaSerialCOM_Request.PVCommand, VinProfile[0,0]);
             //TimerVoltageAnimation.Interval = (Int32)VinProfile[0, 1];            
@@ -1316,11 +1248,11 @@ namespace DLC_Reflash_Tool
             {
                 if (!proc.Start())
                 {
-                    tcs.TrySetException(new InvalidOperationException("Failed to start process. Canal " + channel.ToString()));
+                    tcs.TrySetException(new InvalidOperationException("Failed to start process. Canal " + (channel+1).ToString()));
                     return tcs.Task;
                 }
 
-                LOG_TXT("Processo iniciado - PID: " + proc.Id + "Canal " + channel.ToString());
+                LOG_TXT("Processo iniciado - PID: " + proc.Id + "Canal " + (channel + 1).ToString());
                 
                 if(channel == 0)
                     ProcessoID_Channel0 = proc.Id;
@@ -1341,12 +1273,12 @@ namespace DLC_Reflash_Tool
                         if (h != IntPtr.Zero)
                         {
                             ShowWindow(h, SW_MINIMIZE);
-                            LOG_TXT("Canal " + channel.ToString() + "Janela do processo minimizada");
+                            LOG_TXT("Canal " + (channel + 1).ToString() + "Janela do processo minimizada");
                         }
                     }
                     catch (Exception ex)
                     {
-                        LOG_TXT("Canal " + channel.ToString() + ". Erro ao minimizar janela: " + ex.Message);
+                        LOG_TXT("Canal " + (channel + 1).ToString() + ". Erro ao minimizar janela: " + ex.Message);
                     }
                 });
 
@@ -1360,8 +1292,8 @@ namespace DLC_Reflash_Tool
                             string outputline = await proc.StandardOutput.ReadLineAsync();
                             if (!string.IsNullOrEmpty(outputline))
                             {
-                                Console.WriteLine("Canal " + channel.ToString() + ". Standard Output: " + outputline);
-                                LOG_TXT("Canal " + channel.ToString() + ". Standard Output: " + outputline);
+                                Console.WriteLine("Canal " + (channel + 1).ToString() + ". Standard Output: " + outputline);
+                                LOG_TXT("Canal " + (channel + 1).ToString() + ". Standard Output: " + outputline);
                                 // ANÁLISE DE STRINGS AQUI:
 
                                 //// ERRO - ERRO - ERRO - ERRO 
@@ -1369,8 +1301,8 @@ namespace DLC_Reflash_Tool
                                 if (outputline.Contains("Login failed (KO) !!!"))
                                 {
                                     //Task.Run(() => Console.Beep(800, 3000));
-                                    AppendToTxtInfoSafe("Canal " + channel.ToString() + " >>> DLC não respondeu <<<");
-                                    LOG_TXT("Canal " + channel.ToString() + " >>> DLC não respondeu <<<");
+                                    AppendToTxtInfoSafe("Canal " + (channel + 1).ToString() + " >>> DLC não respondeu <<<");
+                                    LOG_TXT("Canal " + (channel + 1).ToString() + " >>> DLC não respondeu <<<");
 
                                     if (lblSTATUS_Final.InvokeRequired)
                                     {
@@ -1403,6 +1335,7 @@ namespace DLC_Reflash_Tool
                                             btn_Iniciar_Gravação.Enabled = true;
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
+                                            cbkGravaçãoDupla.Enabled = true;
                                             lblEtapa.Text = "Finalizado com falha";                                            
                                         }));
                                     }
@@ -1411,6 +1344,7 @@ namespace DLC_Reflash_Tool
                                         btn_Iniciar_Gravação.Enabled = true;
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
+                                        cbkGravaçãoDupla.Enabled = true;
                                         lblEtapa.Text = "Finalizado com falha";                                        
                                     }
                                 }                                
@@ -1433,8 +1367,8 @@ namespace DLC_Reflash_Tool
                                         timerBEEP.Start();
                                     }
                                     //Task.Run(() => Console.Beep(800, 3000));
-                                    AppendToTxtInfoSafe("Canal " + channel.ToString() + " >>> Falha na gravação. <<<");
-                                    LOG_TXT("Canal " + channel.ToString() + " >>> Falha na gravação. <<<");
+                                    AppendToTxtInfoSafe("Canal " + (channel + 1).ToString() + " >>> Falha na gravação. <<<");
+                                    LOG_TXT("Canal " + (channel + 1).ToString() + " >>> Falha na gravação. <<<");
 
                                     if (btn_Iniciar_Gravação.InvokeRequired)
                                     {
@@ -1443,6 +1377,7 @@ namespace DLC_Reflash_Tool
                                             btn_Iniciar_Gravação.Enabled = true;
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
+                                            cbkGravaçãoDupla.Enabled = true;
                                             lblEtapa.Text = "Finalizado com falha";                                            
                                         }));
                                     }
@@ -1451,6 +1386,7 @@ namespace DLC_Reflash_Tool
                                         btn_Iniciar_Gravação.Enabled = true;
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
+                                        cbkGravaçãoDupla.Enabled = true;
                                         lblEtapa.Text = "Finalizado com falha";                                        
                                     }
                                     proc.Kill();
@@ -1480,8 +1416,8 @@ namespace DLC_Reflash_Tool
                                         timerBEEP.Start();
                                     }
                                     //Task.Run(() => Console.Beep(800, 3000));
-                                    AppendToTxtInfoSafe("Canal " + channel.ToString() + " >>> DLC não foi regravada! Reinicie o processo. <<<");
-                                    LOG_TXT("Canal " + channel.ToString() + " >>> DLC não foi regravada! Reinicie o processo. <<<<<<");
+                                    AppendToTxtInfoSafe("Canal " + (channel + 1).ToString() + " >>> DLC não foi regravada! Reinicie o processo. <<<");
+                                    LOG_TXT("Canal " + (channel + 1).ToString() + " >>> DLC não foi regravada! Reinicie o processo. <<<<<<");
 
                                     if (btn_Iniciar_Gravação.InvokeRequired)
                                     {
@@ -1490,6 +1426,7 @@ namespace DLC_Reflash_Tool
                                             btn_Iniciar_Gravação.Enabled = true;
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
+                                            cbkGravaçãoDupla.Enabled = true;
                                             lblEtapa.Text = "Finalizado com falha";                                            
                                         }));
                                     }
@@ -1498,6 +1435,7 @@ namespace DLC_Reflash_Tool
                                         btn_Iniciar_Gravação.Enabled = true;
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
+                                        cbkGravaçãoDupla.Enabled = true;
                                         lblEtapa.Text = "Finalizado com falha";                                        
                                     }
                                     proc.Kill();
@@ -1528,8 +1466,8 @@ namespace DLC_Reflash_Tool
                                     }
 
                                     //Task.Run(() => Console.Beep(800, 3000));
-                                    AppendToTxtInfoSafe("Canal " + channel.ToString() + " >>> Falha no upload <<<");
-                                    LOG_TXT("Canal " + channel.ToString() + " >>> Falha no upload <<<");
+                                    AppendToTxtInfoSafe("Canal " + (channel + 1).ToString() + " >>> Falha no upload <<<");
+                                    LOG_TXT("Canal " + (channel + 1).ToString() + " >>> Falha no upload <<<");
                                                                         
                                     if (btn_Iniciar_Gravação.InvokeRequired)
                                     {
@@ -1538,6 +1476,7 @@ namespace DLC_Reflash_Tool
                                             btn_Iniciar_Gravação.Enabled = true;
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
+                                            cbkGravaçãoDupla.Enabled = true;
                                             lblEtapa.Text = "Finalizado com falha";                                            
                                         }));
                                     }
@@ -1546,6 +1485,7 @@ namespace DLC_Reflash_Tool
                                         btn_Iniciar_Gravação.Enabled = true;
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
+                                        cbkGravaçãoDupla.Enabled = true;
                                         lblEtapa.Text = "Finalizado com falha";                                        
                                     }
                                     proc.Kill();
@@ -1575,8 +1515,8 @@ namespace DLC_Reflash_Tool
                                         timerBEEP.Start();
                                     }         
 
-                                    AppendToTxtInfoSafe("Canal " + channel.ToString() + " >>> VECTOR não encontrado <<<");
-                                    LOG_TXT("Canal " + channel.ToString() + " >>> VECTOR não encontrado <<<");
+                                    AppendToTxtInfoSafe("Canal " + (channel + 1).ToString() + " >>> VECTOR não encontrado <<<");
+                                    LOG_TXT("Canal " + (channel + 1).ToString() + " >>> VECTOR não encontrado <<<");
 
                                     if (btn_Iniciar_Gravação.InvokeRequired)
                                     {
@@ -1585,6 +1525,7 @@ namespace DLC_Reflash_Tool
                                             btn_Iniciar_Gravação.Enabled = true;
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
+                                            cbkGravaçãoDupla.Enabled = true;
                                             lblEtapa.Text = "Finalizado com falha";                                            
                                         }));
                                     }
@@ -1593,6 +1534,7 @@ namespace DLC_Reflash_Tool
                                         btn_Iniciar_Gravação.Enabled = true;
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
+                                        cbkGravaçãoDupla.Enabled = true;
                                         lblEtapa.Text = "Finalizado com falha";                                        
                                     }
                                     proc.Kill();
@@ -1608,19 +1550,19 @@ namespace DLC_Reflash_Tool
 
                                 if (outputline.Contains("ECU responding (OK)"))
                                 {
-                                    AppendToTxtInfoSafe("Canal " + channel.ToString() + ". Etapa: 1/6 Conectando à DLC");
-                                    LOG_TXT("Canal " + channel.ToString() + ". Etapa: 1/6 Conectando à DLC");
+                                    AppendToTxtInfoSafe("Canal " + (channel + 1).ToString() + ". Etapa: Conectado à DLC");
+                                    LOG_TXT("Canal " + (channel + 1).ToString() + ". Etapa: Conectado à DLC");
 
                                     if (lblEtapa.InvokeRequired)
                                     {
                                         lblEtapa.Invoke(new Action(() =>
                                         {
-                                            lblEtapa.Text = "Etapa: 1/6 Conectando à DLC";
+                                            lblEtapa.Text = "Etapa: Conectado à DLC";
                                         }));
                                     }
                                     else
                                     {
-                                        lblEtapa.Text = "Etapa: 1/6 Conectando à DLC";
+                                        lblEtapa.Text = "Etapa: Conectado à DLC";
                                     }
                                 }
 
@@ -1630,16 +1572,16 @@ namespace DLC_Reflash_Tool
                                     {
                                         lblEtapa.Invoke(new Action(() =>
                                         {
-                                            lblEtapa.Text = "Etapa: 2/6 Upload";
+                                            lblEtapa.Text = "Etapa: Upload iniciado";
                                         }));
                                     }
                                     else
                                     {
-                                        lblEtapa.Text = "Etapa: 2/6 Upload";
+                                        lblEtapa.Text = "Etapa: Upload iniciado";
                                     }
 
-                                    AppendToTxtInfoSafe("Canal " + channel.ToString() + ". Etapa: 2/6 Upload");
-                                    LOG_TXT("Canal " + channel.ToString() + ". Etapa: 2/6 Upload");
+                                    AppendToTxtInfoSafe("Canal " + (channel + 1).ToString() + ". Etapa: Upload iniciado");
+                                    LOG_TXT("Canal " + (channel + 1).ToString() + ". Etapa: Upload iniciado");
                                 }
 
                                 if (outputline.Contains("CRC check passed"))
@@ -1650,9 +1592,9 @@ namespace DLC_Reflash_Tool
                                         {
                                             String frase;
                                             if (DLC_WRITING_PROCESS)
-                                                frase = "Etapa: 6/6 CRC OK";
+                                                frase = "Etapa: CRC OK";
                                             else
-                                                frase = "Etapa: 3/6 CRC OK";
+                                                frase = "Etapa: CRC OK";
                                             lblEtapa.Text = frase;
                                         }));
                                     }
@@ -1660,14 +1602,14 @@ namespace DLC_Reflash_Tool
                                     {
                                         String frase;
                                         if (DLC_WRITING_PROCESS)
-                                            frase = "Etapa: 6/6 CRC OK";
+                                            frase = "Etapa: CRC OK";
                                         else
-                                            frase = "Etapa: 3/6 CRC OK";
+                                            frase = "Etapa: CRC OK";
                                         lblEtapa.Text = frase;
                                     }
 
-                                    AppendToTxtInfoSafe("Canal " + channel.ToString() + ". Etapa: 3/6 CRC OK");
-                                    LOG_TXT("Canal " + channel.ToString() + ". Etapa: 3/6 CRC OK");
+                                    AppendToTxtInfoSafe("Canal " + (channel + 1).ToString() + ". Etapa: CRC OK");
+                                    LOG_TXT("Canal " + (channel + 1).ToString() + ". Etapa: CRC OK");
                                 }
                                                                 
                                 if (outputline.Contains("Write: ["))
@@ -1692,16 +1634,16 @@ namespace DLC_Reflash_Tool
                                     {
                                         lblEtapa.Invoke(new Action(() =>
                                         {
-                                            lblEtapa.Text = "Etapa: 5/6 Gravando novo SW na DLC";                                            
+                                            lblEtapa.Text = "Etapa: Gravando novo SW na DLC";                                            
                                         }));
                                     }
                                     else
                                     {
-                                        lblEtapa.Text = "Etapa: 5/6 Gravando novo SW na DLC";                                        
+                                        lblEtapa.Text = "Etapa: Gravando novo SW na DLC";                                        
                                     }
 
-                                    AppendToTxtInfoSafe("Canal " + channel.ToString() + ". Etapa: 5/6 Gravando novo SW na DLC");
-                                    LOG_TXT("Canal " + channel.ToString() + ". Etapa: 5/6 Gravando novo SW na DLC");
+                                    AppendToTxtInfoSafe("Canal " + (channel + 1).ToString() + ". Etapa: Gravando novo SW na DLC");
+                                    LOG_TXT("Canal " + (channel + 1).ToString() + ". Etapa: Gravando novo SW na DLC");
                                                                         
                                 }
 
@@ -1711,16 +1653,16 @@ namespace DLC_Reflash_Tool
                                     {
                                         lblEtapa.Invoke(new Action(() =>
                                         {
-                                            lblEtapa.Text = "Etapa: 4/6 Limpando memória da DLC";
+                                            lblEtapa.Text = "Etapa: Limpando memória da DLC";
                                         }));
                                     }
                                     else
                                     {
-                                        lblEtapa.Text = "Etapa: 4/6 Limpando memória da DLC";
+                                        lblEtapa.Text = "Etapa: Limpando memória da DLC";
                                     }
 
-                                    AppendToTxtInfoSafe("Canal " + channel.ToString() + ". Etapa: 4/6 Limpando memória da DLC");
-                                    LOG_TXT("Canal " + channel.ToString() + ". Etapa: 4/6 Limpando memória da DLC");
+                                    AppendToTxtInfoSafe("Canal " + (channel + 1).ToString() + ". Etapa: Limpando memória da DLC");
+                                    LOG_TXT("Canal " + (channel + 1).ToString() + ". Etapa: Limpando memória da DLC");
                                 }
 
                                 if (outputline.Contains("ECU is programmed successfully (OK)"))
@@ -1729,25 +1671,72 @@ namespace DLC_Reflash_Tool
                                     {
                                         lblSTATUS_Final.Invoke(new Action(() =>
                                         {
-                                            lblSTATUS_Final.Text = ">>> OK <<<";
+                                            if(cbkGravaçãoDupla.Checked)//Se a gravação for dupla, temos que aguardar a finalização da segunda peça!
+                                            {
+                                                if (Fase1FinalizaçãoOK) //Um canal já finalizou a gravação!
+                                                {
+                                                    Fase1FinalizaçãoOK = false;
+                                                    lblSTATUS_Final.Text = "Peça OK";
+                                                    lblSTATUS_Final.ForeColor = Color.Green;
+                                                    timerChecoutAnimaçãoFinal.Start();
+                                                    if (formAlerta == null || formAlerta.IsDisposed)
+                                                    {
+                                                        formAlerta = new FormAlertaFinalização();
+                                                        formAlerta.Show();
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Fase1FinalizaçãoOK = true;
+                                                    lblSTATUS_Final.Text = "Finalizando gravação";
+                                                    lblSTATUS_Final.ForeColor = Color.Blue;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                lblSTATUS_Final.Text = "Peça OK";
+                                                lblSTATUS_Final.ForeColor = Color.Green;
+                                                timerChecoutAnimaçãoFinal.Start();
+                                                if (formAlerta == null || formAlerta.IsDisposed)
+                                                {
+                                                    formAlerta = new FormAlertaFinalização();
+                                                    formAlerta.Show();
+                                                }
+                                            }     
+                                        }));
+                                    }
+                                    else
+                                    {
+                                        if (cbkGravaçãoDupla.Checked)//Se a gravação for dupla, temos que aguardar a finalização da segunda peça!
+                                        {
+                                            if (Fase1FinalizaçãoOK) //Um canal já finalizou a gravação!
+                                            {
+                                                Fase1FinalizaçãoOK = false;
+                                                lblSTATUS_Final.Text = "Peça OK";
+                                                lblSTATUS_Final.ForeColor = Color.Green;
+                                                timerChecoutAnimaçãoFinal.Start();
+                                                if (formAlerta == null || formAlerta.IsDisposed)
+                                                {
+                                                    formAlerta = new FormAlertaFinalização();
+                                                    formAlerta.Show();
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Fase1FinalizaçãoOK = true;
+                                                AppendToTxtInfoSafe("Finalizando gravação");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            lblSTATUS_Final.Text = "Peça OK";
                                             lblSTATUS_Final.ForeColor = Color.Green;
                                             timerChecoutAnimaçãoFinal.Start();
                                             if (formAlerta == null || formAlerta.IsDisposed)
                                             {
                                                 formAlerta = new FormAlertaFinalização();
-                                                formAlerta.Show();                                                
+                                                formAlerta.Show();
                                             }
-                                        }));
-                                    }
-                                    else
-                                    {
-                                        lblSTATUS_Final.Text = ">>> OK <<<";
-                                        lblSTATUS_Final.ForeColor = Color.Green;
-                                        timerChecoutAnimaçãoFinal.Start();
-                                        if (formAlerta == null || formAlerta.IsDisposed)
-                                        {
-                                            formAlerta = new FormAlertaFinalização();
-                                            formAlerta.Show();                                            
                                         }
                                     }
 
@@ -1755,18 +1744,18 @@ namespace DLC_Reflash_Tool
                                     {
                                         lblEtapa.Invoke(new Action(() =>
                                         {                                            
-                                            lblEtapa.Text = "Etapa: 6/6 Finalizado com sucesso";
+                                            lblEtapa.Text = "Etapa: Finalizado com sucesso";
                                         }));
                                     }
                                     else
                                     {
-                                        lblEtapa.Text = "Etapa: 6/6 Finalizado com sucesso";                                        
+                                        lblEtapa.Text = "Etapa: Finalizado com sucesso";                                        
                                     }
 
                                     Task.Run(() => Console.Beep(800, 3000));
                                     
-                                    AppendToTxtInfoSafe("Canal " + channel.ToString() + ". DLC programada com sucesso!");
-                                    LOG_TXT("Canal " + channel.ToString() + ". DLC programada com sucesso!");
+                                    AppendToTxtInfoSafe("Canal " + (channel + 1).ToString() + ". DLC programada com sucesso!");
+                                    LOG_TXT("Canal " + (channel + 1).ToString() + ". DLC programada com sucesso!");
                                     TimerContador.Stop();   
 
                                     proc.Kill();
@@ -1780,14 +1769,14 @@ namespace DLC_Reflash_Tool
 
                                 if (outputline.Contains("ECU is in application mode now (OK)"))
                                 {
-                                    AppendToTxtInfoSafe("Canal " + channel.ToString() + ". DLC em modo de aplicação");
-                                    LOG_TXT("Canal " + channel.ToString() + ". DLC em modo de aplicação");
+                                    AppendToTxtInfoSafe("Canal " + (channel + 1).ToString() + ". DLC em modo de aplicação");
+                                    LOG_TXT("Canal " + (channel + 1).ToString() + ". DLC em modo de aplicação");
                                 }
 
                                 if (outputline.Contains("Time elapsed:"))
                                 {
-                                    AppendToTxtInfoSafe("Canal " + channel.ToString() + " ." + outputline);
-                                    LOG_TXT("Canal " + channel.ToString() + ". Tempo total de gravação: " + outputline);
+                                    AppendToTxtInfoSafe("Canal " + (channel + 1).ToString() + " ." + outputline);
+                                    LOG_TXT("Canal " + (channel + 1).ToString() + ". Tempo total de gravação: " + outputline);
                                     if (btn_Iniciar_Gravação.InvokeRequired)
                                     {
                                         btn_Iniciar_Gravação.Invoke(new Action(() =>
@@ -1795,6 +1784,7 @@ namespace DLC_Reflash_Tool
                                             btn_Iniciar_Gravação.Enabled = true;
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
+                                            cbkGravaçãoDupla.Enabled = true;
                                         }));
                                     }
                                     else
@@ -1802,26 +1792,26 @@ namespace DLC_Reflash_Tool
                                         btn_Iniciar_Gravação.Enabled = true;
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
+                                        cbkGravaçãoDupla.Enabled = true;
                                     }
-                                }
+                                }                                
                                 
-                                /*
                                 if (outputline.Contains("=>"))
                                 {
                                     if(DLC_WRITING_PROCESS)
                                     {
                                         if (lblEtapa.InvokeRequired)
                                         {
-                                            lblEtapa.Invoke(new Action(() => lblEtapa.Text = "Etapa: 5/6 Gravando novo SW na DLC (" + outputline.Substring(outputline.Length - 4) + ")"));
+                                            lblEtapa.Invoke(new Action(() => lblEtapa.Text = "Etapa: Gravando novo SW na DLC (" + outputline.Substring(outputline.Length - 4) + ")"));
                                         }
                                         else
                                         {
-                                            lblEtapa.Text = "Etapa: 5/6 Gravando novo SW na DLC (" + outputline.Substring(outputline.Length - 4) + ")";
+                                            lblEtapa.Text = "Etapa: Gravando novo SW na DLC (" + outputline.Substring(outputline.Length - 4) + ")";
                                         }
                                     }                                   
                                     //AppendToTxtInfoSafe(outputline);
                                     //LOG_TXT("Tempo total de gravação: " + outputline.Substring(outputline.Length - 4));
-                                } */                               
+                                }                               
 
                                 /*
                                 // 2. Procura por canais VN1640A
@@ -1884,7 +1874,7 @@ namespace DLC_Reflash_Tool
                     }
                     catch (Exception ex)
                     {
-                        LOG_TXT("Canal " + channel.ToString() + ". Erro ao ler StdOut: " + ex.Message);
+                        LOG_TXT("Canal " + (channel + 1).ToString() + ". Erro ao ler StdOut: " + ex.Message);
                     }
                 });
 
@@ -1899,11 +1889,11 @@ namespace DLC_Reflash_Tool
                             try
                             {
                                 SendKeysToProcessWindow(proc, channel.ToString() +"{ENTER}");
-                                LOG_TXT("Attempted to send '" + channel.ToString() + "' ENTER to process window.");
+                                LOG_TXT("Attempted to send '" + (channel + 1).ToString() + "' ENTER to process window.");
                             }
                             catch (Exception ex)
                             {
-                                LOG_TXT("Canal " + channel.ToString() + ". Failed to send keys to process window: " + ex.Message);
+                                LOG_TXT("Canal " + (channel + 1).ToString() + ". Failed to send keys to process window: " + ex.Message);
                             }
                         }
                     }
@@ -1938,186 +1928,7 @@ namespace DLC_Reflash_Tool
 
             return tcs.Task;
         }
-
-        /*
-        Task<int> RunCmdAndStreamOutput(string command)
-        {
-            var psi = new ProcessStartInfo("cmd.exe", "/k " + command)
-            {
-                CreateNoWindow = false,
-                UseShellExecute = false,
-                RedirectStandardOutput = false,
-                RedirectStandardError = true,
-                RedirectStandardInput = false,
-                WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
-            };
-
-            var proc = new Process { StartInfo = psi, EnableRaisingEvents = true };
-            var tcs = new TaskCompletionSource<int>();
-
-            try
-            {
-                if (!proc.Start())
-                {
-                    tcs.TrySetException(new InvalidOperationException("Failed to start process."));
-                    return tcs.Task;
-                }
-
-                LOG_TXT("Processo iniciado - PID: " + proc.Id);
-
-                // Minimiza a janela do CMD
-                Task.Run(async () =>
-                {
-                    await Task.Delay(100);
-                    try
-                    {
-                        IntPtr h = proc.MainWindowHandle;
-                        if (h == IntPtr.Zero)
-                        {
-                            h = FindWindowForProcess(proc.Id);
-                        }
-                        if (h != IntPtr.Zero)
-                        {
-                            ShowWindow(h, SW_MINIMIZE);
-                            LOG_TXT("Janela do processo minimizada");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LOG_TXT("Erro ao minimizar janela: " + ex.Message);
-                    }
-                });
-
-                // After the cmd window opens, wait 2 seconds and force typing "0" + ENTER into it.
-                Task.Run(async () =>
-                {
-                    try
-                    {
-                        await Task.Delay(2000);
-                        if (proc != null && !proc.HasExited)
-                        {
-                            try
-                            {
-                                SendKeysToProcessWindow(proc, "0{ENTER}");
-                                LOG_TXT("Attempted to send '0' + ENTER to process window.");
-                            }
-                            catch (Exception ex)
-                            {
-                                LOG_TXT("Failed to send keys to process window: " + ex.Message);
-                            }
-                        }
-                    }
-                    catch { }
-                });
-
-                // Wait for exit on a background thread and propagate exit code
-                Task.Run(() =>
-                {
-                    try
-                    {
-                        proc.WaitForExit();
-                        int code = -1;
-                        try { code = proc.ExitCode; } catch { code = -1; }
-                        tcs.TrySetResult(code);
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.TrySetException(ex);
-                    }
-                    finally
-                    {
-                        try { proc.Dispose(); } catch { }
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                try { proc.Dispose(); } catch { }
-                tcs.TrySetException(ex);
-            }
-
-            return tcs.Task;
-        }*/
-
-        // Asynchronous streaming: runs cmd hidden and appends each output line to txt_Info safely
-        // Now returns a Task<int> so callers can await exit code if desired.
-        /*Task<int> RunCmdAndStreamOutput(string command)
-        {
-            // Start a visible cmd window so the user can see the tool output directly.
-            // Do not redirect output so the console shows all information.
-            var psi = new ProcessStartInfo("cmd.exe", "/k " + command)
-            {
-                CreateNoWindow = false,
-                UseShellExecute = false,
-                RedirectStandardOutput = false,
-                RedirectStandardError = true,
-                RedirectStandardInput = false,
-                WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
-                WindowStyle = ProcessWindowStyle.Minimized
-            };
-
-            var proc = new Process { StartInfo = psi, EnableRaisingEvents = true };
-            var tcs = new TaskCompletionSource<int>();
-
-            try
-            {
-                if (!proc.Start())
-                {
-                    tcs.TrySetException(new InvalidOperationException("Failed to start process."));
-                    return tcs.Task;
-                }
-
-                // After the cmd window opens, wait 2 seconds and force typing "0" + ENTER into it.
-                Task.Run(async () =>
-                {
-                    try
-                    {
-                        await Task.Delay(2000);
-                        if (proc != null && !proc.HasExited)
-                        {
-                            try
-                            {
-                                SendKeysToProcessWindow(proc, "0{ENTER}");
-                                LOG_TXT("Attempted to send '0' + ENTER to process window.");
-                            }
-                            catch (Exception ex)
-                            {
-                                LOG_TXT("Failed to send keys to process window: " + ex.Message);
-                            }
-                        }
-                    }
-                    catch { }
-                });
-
-                // Wait for exit on a background thread and propagate exit code
-                Task.Run(() =>
-                {
-                    try
-                    {
-                        proc.WaitForExit();
-                        int code = -1;
-                        try { code = proc.ExitCode; } catch { code = -1; }
-                        tcs.TrySetResult(code);
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.TrySetException(ex);
-                    }
-                    finally
-                    {
-                        try { proc.Dispose(); } catch { }
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                try { proc.Dispose(); } catch { }
-                tcs.TrySetException(ex);
-            }
-
-            return tcs.Task;
-        }*/
-
+      
         void CarregarPerfilAnimação()
         {
             //Implementar a lógica para carregar o perfil de animação, utilizando os arquivos e a porta serial selecionados.
@@ -2181,6 +1992,7 @@ namespace DLC_Reflash_Tool
 
         private void TimeoutSerialResponse_Tick(object sender, EventArgs e)
         {
+            Console.WriteLine("Timer: TimeoutSerialResponse - RODANDO");
             TimeoutSerialResponse.Stop();
 
             QT_Timeout++;
@@ -2227,8 +2039,7 @@ namespace DLC_Reflash_Tool
                 txt_Info.AppendText(line);
             }
         }
-
-        // Helper to append text to txt_Info from any thread
+                
         void AppendToTxtInfoSafe(string text)
         {
             if (txt_Info.InvokeRequired)
@@ -2249,7 +2060,8 @@ namespace DLC_Reflash_Tool
 
         private void TimerVoltageAnimation_Tick(object sender, EventArgs e)
         {
-            if(cbxModeloFonte.SelectedIndex == 0 || cbxModeloFonte.SelectedIndex == 2) //TDK-Lambda
+            Console.WriteLine("Timer: TimerVoltageAnimation - RODANDO");
+            if (cbxModeloFonte.SelectedIndex == 0 || cbxModeloFonte.SelectedIndex == 2) //TDK-Lambda
             {
                 MontarPacoteSerial((UInt16)portaSerialCOM_Request.PVCommand, VinProfile[VinProfileIndex, 0]);
             }                
@@ -2290,7 +2102,7 @@ namespace DLC_Reflash_Tool
         
         private void btnOUT_ON_Click(object sender, EventArgs e)
         {
-            if (cbxModeloFonte.SelectedIndex == 0 || cbxModeloFonte.SelectedIndex == 2) //TDK-Lambda e Keithley
+            if (cbxModeloFonte.SelectedIndex == 0 || cbxModeloFonte.SelectedIndex == 2) //TDK-Lambda e MPS
             {
                 MontarPacoteSerial((UInt16)portaSerialCOM_Request.OUTCommand, 1);
             }
@@ -2313,7 +2125,7 @@ namespace DLC_Reflash_Tool
                 SendCommand("OUTPUT1\\n");
                 Thread.Sleep(200);
                 SendCommand("VSET1:13,500\\n");
-                AppendToTxtInfoSafe("Saída ligada!");
+                //AppendToTxtInfoSafe("Saída ligada!");
             }
         }
 
@@ -2327,7 +2139,7 @@ namespace DLC_Reflash_Tool
                 {
                     SendCommand("OUTP OFF");
                     //MessageBox.Show("Saída ligada!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    AppendToTxtInfoSafe("Saída desligada!");
+                    //AppendToTxtInfoSafe("Saída desligada!");
                 }
                 catch (Exception ex)
                 {
@@ -2338,7 +2150,7 @@ namespace DLC_Reflash_Tool
             else if(cbxModeloFonte.SelectedIndex == 3) //AFS
             {
                 SendCommand("OUTPUT0\\n");
-                AppendToTxtInfoSafe("Saída desligada!");
+                //AppendToTxtInfoSafe("Saída desligada!");
             }
         }
 
@@ -2347,6 +2159,8 @@ namespace DLC_Reflash_Tool
             timerBEEP.Stop();
             FecharProcessoPorId(ProcessoID_Channel0);
             FecharProcessoPorId(ProcessoID_Channel1);
+            TimerContador.Stop();
+            cbkGravaçãoDupla.Enabled = true;
         }
         
         void FecharProcessoPorId(int processId)
@@ -2435,10 +2249,12 @@ namespace DLC_Reflash_Tool
                 MontarPacoteSerial((UInt16)portaSerialCOM_Request.MPS_FUNC2Command, 0);
             }
         }
+        
         private void cbkGravaçãoDupla_CheckedChanged(object sender, EventArgs e)
         {
             Salvar_Dados_Serial();
         }
+        
         private void btnOUT3_ON_Click(object sender, EventArgs e)
         {
             if (cbxModeloFonte.SelectedIndex == 2) //MPS
@@ -2510,6 +2326,7 @@ namespace DLC_Reflash_Tool
 
         private void timerChecoutAnimaçãoFinal_Tick(object sender, EventArgs e)
         {
+            Console.WriteLine("Timer: timerChecoutAnimaçãoFinal - RODANDO");
             if (Aux_AnimaçãoFinal)
             {
                 LigarSaida1();
@@ -2558,6 +2375,7 @@ namespace DLC_Reflash_Tool
                         lblSTATUS_Final.Text = "Conecte nova peça";
                         lblSTATUS_Final.ForeColor = Color.Blue;
                         DetecçãoCorrenteCounter = 0;
+                        cbkGravaçãoDupla.Enabled = true;
                     }                    
                 }
                 else
@@ -2583,6 +2401,7 @@ namespace DLC_Reflash_Tool
 
         private void TimerForceBootMode_Tick(object sender, EventArgs e)
         {
+            Console.WriteLine("Timer: TimerForceBootMode - RODANDO");
             ForçarBootMode = true;
             TimerForceBootMode.Stop();
             AppendToTxtInfoSafe("Entrando em BOOT.");
@@ -2599,43 +2418,11 @@ namespace DLC_Reflash_Tool
             TimeSpan tempo = TimeSpan.FromSeconds(segundos);
             return tempo.ToString(@"mm\:ss");
         }
-
-        private void Checar_Status_Inicial()
-        {
-            /*
-            private SerialPort PortaSerialCOM = new SerialPort();
-
-            UInt16 RequestIndex = 0, aux_count = 0, TempoDecorrido = 0;
-
-            double[,] VinProfile = new double[5, 2]; //Tensão(V) ; Tempo(ms)
-            UInt16 VinProfileIndex = 0;
-
-            Boolean GravaçãoON = false, AguardandoBoot_DLC = false, ConexãoAutomática = false, FonteConectada = false;
-            Boolean ForçarBootMode = false, DLC_WRITING_PROCESS = false;
-
-            Double output_Current = 0.0;
-
-            string[] SerialPorts;
-            UInt16 IndexPortaSerialConexaoAutomatica = 0; */
-
-            Console.WriteLine("PortaSeria: " + PortaSerialCOM.IsOpen);
-            Console.WriteLine("RequestIndex: " + RequestIndex);
-            Console.WriteLine("aux_count: " + aux_count);
-            Console.WriteLine("TempoDecorrido: " + TempoDecorrido);
-            Console.WriteLine("VinProfileIndex: " + VinProfileIndex);
-            Console.WriteLine("GravaçãoON: " + GravaçãoON);
-            Console.WriteLine("AguardandoBoot_DLC: " + DLC_Modo_Boot);
-            Console.WriteLine("ConexãoAutomática: " + ConexãoAutomática);
-            Console.WriteLine("FonteConectada: " + FonteConectada);
-            Console.WriteLine("ForçarBootMode: " + ForçarBootMode);
-            Console.WriteLine("DLC_WRITING_PROCESS: " + DLC_WRITING_PROCESS);
-            Console.WriteLine("output_Current: " + output_Current);
-            Console.WriteLine("IndexPortaSerialConexaoAutomatica: " + IndexPortaSerialConexaoAutomatica);
-        }
-
+                
         private void TimerCheckBootMode_Tick(object sender, EventArgs e)
         {
-            if (cbxModeloFonte.SelectedIndex == 0 || cbxModeloFonte.SelectedIndex == 2)//TDK-Lambda
+            Console.WriteLine("Timer: TimerCheckBootMode - RODANDO");
+            if (cbxModeloFonte.SelectedIndex == 0 || cbxModeloFonte.SelectedIndex == 2)//TDK-Lambda ou MPS
             {
                 if (!DLC_Modo_Boot)
                 {
@@ -2655,7 +2442,9 @@ namespace DLC_Reflash_Tool
                     string D4X_ST_SW_File = lblSWName.Text;
                     string cmdCommand = ".\\ALFlasherAll.exe --ecuClass NXP --baud 19200 --txId 0x3C --rxId " +
                                         "0x3D --lin --ram " + D4X_DL_SWSB_File + " --jumpAddr 0x20000004 --writeCode " +
-                                        D4X_ST_SW_File + " --crcCode " + D4X_ST_SW_File + " --ecuReset";
+                                        D4X_ST_SW_File + " --crcCode " + D4X_ST_SW_File; // + " --ecuReset";
+                                                                                                        
+                                                                                            
 
                     LOG_TXT("Running command: " + cmdCommand);
 
@@ -2715,7 +2504,7 @@ namespace DLC_Reflash_Tool
                     string D4X_ST_SW_File = lblSWName.Text;
                     string cmdCommand = ".\\ALFlasherAll.exe --ecuClass NXP --baud 19200 --txId 0x3C --rxId " +
                                         "0x3D --lin --ram " + D4X_DL_SWSB_File + " --jumpAddr 0x20000004 --writeCode " +
-                                        D4X_ST_SW_File + " --crcCode " + D4X_ST_SW_File + " --ecuReset";
+                                        D4X_ST_SW_File + " --crcCode " + D4X_ST_SW_File;// + " --ecuReset";
 
                     LOG_TXT("Running command: " + cmdCommand);
 
@@ -2752,7 +2541,7 @@ namespace DLC_Reflash_Tool
                     string D4X_ST_SW_File = lblSWName.Text;
                     string cmdCommand = ".\\ALFlasherAll.exe --ecuClass NXP --baud 19200 --txId 0x3C --rxId " +
                                         "0x3D --lin --ram " + D4X_DL_SWSB_File + " --jumpAddr 0x20000004 --writeCode " +
-                                        D4X_ST_SW_File + " --crcCode " + D4X_ST_SW_File + " --ecuReset";
+                                        D4X_ST_SW_File + " --crcCode " + D4X_ST_SW_File;// + " --ecuReset";
 
                     LOG_TXT("Running command: " + cmdCommand);
 
@@ -2767,42 +2556,6 @@ namespace DLC_Reflash_Tool
                     }                    
                 }
             }
-        }
-        
-        async Task BeepIntervalado(int frequencia = 1000, int duracao = 200, int intervalo = 100, int repeticoes = 200)
-        {
-            beepCancellationToken = new CancellationTokenSource();
-
-            await Task.Run(() =>
-            {
-                try
-                {
-                    for (int i = 0; i < repeticoes; i++)
-                    {
-                        if (beepCancellationToken.Token.IsCancellationRequested)
-                            break;
-
-                        Console.Beep(frequencia, duracao);
-
-                        if (i < repeticoes - 1) // Não aguarda após o último beep
-                        {
-                            Thread.Sleep(intervalo);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LOG_TXT("Erro ao emitir beep: " + ex.Message);
-                }
-            }, beepCancellationToken.Token);
-        }
-
-        void PararBeep()
-        {
-            if (beepCancellationToken != null)
-            {
-                beepCancellationToken.Cancel();
-            }
-        }
+        }   
     }
 }
