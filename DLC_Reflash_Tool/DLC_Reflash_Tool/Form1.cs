@@ -1156,6 +1156,7 @@ namespace DLC_Reflash_Tool
             DLC_Modo_Boot = false;
             DLC_WRITING_PROCESS = false;
             cbkGravaçãoDupla.Enabled = false;
+            btnConectarPortaSerialCOM.Enabled = false;
 
             TempoDecorrido = 0;
             TimerContador.Start();
@@ -1336,7 +1337,8 @@ namespace DLC_Reflash_Tool
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
                                             cbkGravaçãoDupla.Enabled = true;
-                                            lblEtapa.Text = "Finalizado com falha";                                            
+                                            lblEtapa.Text = "Finalizado com falha";
+                                            btnConectarPortaSerialCOM.Enabled = true;
                                         }));
                                     }
                                     else
@@ -1345,7 +1347,8 @@ namespace DLC_Reflash_Tool
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
                                         cbkGravaçãoDupla.Enabled = true;
-                                        lblEtapa.Text = "Finalizado com falha";                                        
+                                        lblEtapa.Text = "Finalizado com falha";
+                                        btnConectarPortaSerialCOM.Enabled = true;
                                     }
                                 }                                
 
@@ -1378,7 +1381,8 @@ namespace DLC_Reflash_Tool
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
                                             cbkGravaçãoDupla.Enabled = true;
-                                            lblEtapa.Text = "Finalizado com falha";                                            
+                                            lblEtapa.Text = "Finalizado com falha";
+                                            btnConectarPortaSerialCOM.Enabled = true;
                                         }));
                                     }
                                     else
@@ -1387,7 +1391,8 @@ namespace DLC_Reflash_Tool
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
                                         cbkGravaçãoDupla.Enabled = true;
-                                        lblEtapa.Text = "Finalizado com falha";                                        
+                                        lblEtapa.Text = "Finalizado com falha";
+                                        btnConectarPortaSerialCOM.Enabled = true;
                                     }
                                     proc.Kill();
                                     proc.Dispose();
@@ -1427,6 +1432,7 @@ namespace DLC_Reflash_Tool
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
                                             cbkGravaçãoDupla.Enabled = true;
+                                            btnConectarPortaSerialCOM.Enabled = true;
                                             lblEtapa.Text = "Finalizado com falha";                                            
                                         }));
                                     }
@@ -1436,7 +1442,8 @@ namespace DLC_Reflash_Tool
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
                                         cbkGravaçãoDupla.Enabled = true;
-                                        lblEtapa.Text = "Finalizado com falha";                                        
+                                        lblEtapa.Text = "Finalizado com falha";
+                                        btnConectarPortaSerialCOM.Enabled = true;
                                     }
                                     proc.Kill();
                                     proc.Dispose();
@@ -1477,7 +1484,8 @@ namespace DLC_Reflash_Tool
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
                                             cbkGravaçãoDupla.Enabled = true;
-                                            lblEtapa.Text = "Finalizado com falha";                                            
+                                            lblEtapa.Text = "Finalizado com falha";
+                                            btnConectarPortaSerialCOM.Enabled = true;
                                         }));
                                     }
                                     else
@@ -1486,7 +1494,8 @@ namespace DLC_Reflash_Tool
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
                                         cbkGravaçãoDupla.Enabled = true;
-                                        lblEtapa.Text = "Finalizado com falha";                                        
+                                        lblEtapa.Text = "Finalizado com falha";
+                                        btnConectarPortaSerialCOM.Enabled = true;
                                     }
                                     proc.Kill();
                                     proc.Dispose();
@@ -1526,7 +1535,8 @@ namespace DLC_Reflash_Tool
                                             btnOUT1_OFF.Enabled = true;
                                             btnOUT1_ON.Enabled = true;
                                             cbkGravaçãoDupla.Enabled = true;
-                                            lblEtapa.Text = "Finalizado com falha";                                            
+                                            lblEtapa.Text = "Finalizado com falha";
+                                            btnConectarPortaSerialCOM.Enabled = true;
                                         }));
                                     }
                                     else
@@ -1535,7 +1545,8 @@ namespace DLC_Reflash_Tool
                                         btnOUT1_OFF.Enabled = true;
                                         btnOUT1_ON.Enabled = true;
                                         cbkGravaçãoDupla.Enabled = true;
-                                        lblEtapa.Text = "Finalizado com falha";                                        
+                                        lblEtapa.Text = "Finalizado com falha";
+                                        btnConectarPortaSerialCOM.Enabled = true;
                                     }
                                     proc.Kill();
                                     proc.Dispose();
@@ -1675,6 +1686,7 @@ namespace DLC_Reflash_Tool
                                             {
                                                 if (Fase1FinalizaçãoOK) //Um canal já finalizou a gravação!
                                                 {
+                                                    btnConectarPortaSerialCOM.Enabled = true;
                                                     Fase1FinalizaçãoOK = false;
                                                     lblSTATUS_Final.Text = "Peça OK";
                                                     lblSTATUS_Final.ForeColor = Color.Green;
@@ -1694,6 +1706,7 @@ namespace DLC_Reflash_Tool
                                             }
                                             else
                                             {
+                                                btnConectarPortaSerialCOM.Enabled = true;
                                                 lblSTATUS_Final.Text = "Peça OK";
                                                 lblSTATUS_Final.ForeColor = Color.Green;
                                                 timerChecoutAnimaçãoFinal.Start();
@@ -1711,6 +1724,7 @@ namespace DLC_Reflash_Tool
                                         {
                                             if (Fase1FinalizaçãoOK) //Um canal já finalizou a gravação!
                                             {
+                                                btnConectarPortaSerialCOM.Enabled = true;
                                                 Fase1FinalizaçãoOK = false;
                                                 lblSTATUS_Final.Text = "Peça OK";
                                                 lblSTATUS_Final.ForeColor = Color.Green;
@@ -1729,6 +1743,7 @@ namespace DLC_Reflash_Tool
                                         }
                                         else
                                         {
+                                            btnConectarPortaSerialCOM.Enabled = true;
                                             lblSTATUS_Final.Text = "Peça OK";
                                             lblSTATUS_Final.ForeColor = Color.Green;
                                             timerChecoutAnimaçãoFinal.Start();
@@ -2161,6 +2176,9 @@ namespace DLC_Reflash_Tool
             FecharProcessoPorId(ProcessoID_Channel1);
             TimerContador.Stop();
             cbkGravaçãoDupla.Enabled = true;
+            btnConectarPortaSerialCOM.Enabled = true;
+            lblSTATUS_Final.Text = "-----------------------";
+            lblSTATUS_Final.ForeColor = Color.Black;
         }
         
         void FecharProcessoPorId(int processId)
