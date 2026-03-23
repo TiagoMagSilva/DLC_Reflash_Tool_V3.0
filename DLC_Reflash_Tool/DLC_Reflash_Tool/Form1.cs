@@ -33,9 +33,47 @@ namespace DLC_Reflash_Tool
 {
     public partial class MainForm : Form
     {
+        static DialogResult InputBox(string titulo, string mensagem, out string resultado)
+        {
+            Form form = new Form();
+            Label label = new Label();
+            TextBox textBox = new TextBox();
+            Button btnOk = new Button();
+            Button btnCancel = new Button();
+
+            form.Text = titulo;
+            label.Text = mensagem;
+            textBox.Text = "";
+
+            btnOk.Text = "OK";
+            btnCancel.Text = "Cancelar";
+            btnOk.DialogResult = DialogResult.OK;
+            btnCancel.DialogResult = DialogResult.Cancel;
+
+            label.SetBounds(10, 10, 420, 20);
+            textBox.SetBounds(10, 35, 420, 20);
+            btnOk.SetBounds(270, 70, 75, 25);
+            btnCancel.SetBounds(355, 70, 75, 25);
+
+            form.ClientSize = new Size(440, 105);
+            form.Controls.AddRange(new Control[] { label, textBox, btnOk, btnCancel });
+            form.FormBorderStyle = FormBorderStyle.FixedDialog;
+            form.StartPosition = FormStartPosition.CenterParent;
+            form.MinimizeBox = false;
+            form.MaximizeBox = false;
+            form.AcceptButton = btnOk;
+            form.CancelButton = btnCancel;
+
+            DialogResult dialogResult = form.ShowDialog();
+            resultado = textBox.Text;
+            return dialogResult;
+        }
+
         String path_SERIAL = System.AppDomain.CurrentDomain.BaseDirectory + "/SERIAL/";
         String path_LOG = System.AppDomain.CurrentDomain.BaseDirectory + "/LOG/";
         String path_CONFIG = System.AppDomain.CurrentDomain.BaseDirectory + "/CONFIG/";
+        String path_DLSSoftwareFiles = System.AppDomain.CurrentDomain.BaseDirectory;
+        String SoftwareEmGravação = String.Empty;
 
         private CancellationTokenSource beepCancellationToken;
 
@@ -246,11 +284,48 @@ namespace DLC_Reflash_Tool
         {
             AtualizarPortasSeriais();
             LerInformacoesPortaSerialSalva();
-            LerInformacoesSoftwareSalvas();            
-                      
+            LerInformacoesSoftwareSalvas();
+
+            if (!File.Exists(path_DLSSoftwareFiles + "/" + SoftwareEmGravação))
+            {                
+                MessageBox.Show("Os arquivos de software da DLC estão incorretos.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LOG_TXT("Os arquivos de software da DLC estão incorretos!");
+                Environment.Exit(0);
+                return;
+            }
+
+            if (lblSWName.Text == "D4X_ST131_SW0301_All.hex")
+            {
+                DialogResult resultado = MessageBox.Show("ATENÇÃO! Este software é destinado APENAS para uso com o modelo TORO 2262 (MY27). " +
+                                                         "\r\n\r\nDeseja continuar?", "CUIDADO!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if(resultado != DialogResult.Yes)
+                {
+                    LOG_TXT("Usuário encerrou a execução do programa logo após a mensagem de apresentação");
+                    Environment.Exit(0);
+                    return;
+                }
+
+                LOG_TXT("Usuário confirmou durante processo de abertura que pretende proseguir com software para MY27");
+                this.Text = "DLC Reflash Tool - CUIDADO! MY27! MY27! MY27! MY27! MY27!";
+                this.BackColor = SystemColors.ControlDarkDark;
+                txt_Info.BackColor = SystemColors.ControlDark;
+                btnLimparInfo.BackColor = SystemColors.ControlDark;
+                btnCancelarProcesso.BackColor = SystemColors.ControlDark;
+                btnConectarPortaSerialCOM.BackColor = SystemColors.ControlDark;
+                btnOUT1_OFF.BackColor = SystemColors.ControlDark;
+                btnOUT1_ON.BackColor = SystemColors.ControlDark;
+                btnOUT2_OFF.BackColor = SystemColors.ControlDark;
+                btnOUT2_ON.BackColor = SystemColors.ControlDark;
+                btnOUT3_OFF.BackColor = SystemColors.ControlDark;
+                btnOUT3_ON.BackColor = SystemColors.ControlDark;
+                btnRefreshPortaSerialCOM.BackColor = SystemColors.ControlDark;
+                cbxModeloFonte.BackColor = SystemColors.ControlDark;
+                cbxPortaSerialCOM.BackColor = SystemColors.ControlDark;
+            }
             
             cbxPortaSerialCOM.Enabled = true;
             btnRefreshPortaSerialCOM.Enabled = true;
+            btnCancelarProcesso.Enabled = false;
 
             this.ActiveControl = btnConectarPortaSerialCOM;
         }
@@ -352,6 +427,7 @@ namespace DLC_Reflash_Tool
                     {
                         //txt_Caminho_ST_SW.Text = line;
                         lblSWName.Text = line;
+                        SoftwareEmGravação = line;
                     }
                 }
             }
@@ -503,6 +579,7 @@ namespace DLC_Reflash_Tool
                             cbxPortaSerialCOM.Enabled = false;
                             btnRefreshPortaSerialCOM.Enabled = false;                            
                             cbxModeloFonte.Enabled = false;
+                            btnCancelarProcesso.Enabled = true;
                             Salvar_Dados_Serial();
 
                             btn_Iniciar_Gravação.Invoke(new Action(() =>
@@ -552,6 +629,7 @@ namespace DLC_Reflash_Tool
                         TimerVoltageAnimation.Stop();
                         btnOUT1_OFF.Enabled = false;
                         btnOUT1_ON.Enabled = false;
+                        btnCancelarProcesso.Enabled = false;
                         PortaSerialCOM.Close();
                         btnConectarPortaSerialCOM.Text = "Abrir Porta (A)";                        
                         cbxPortaSerialCOM.Enabled = true;
@@ -568,6 +646,7 @@ namespace DLC_Reflash_Tool
                         TimerVoltageAnimation.Stop();
                         btnOUT1_OFF.Enabled = false;
                         btnOUT1_ON.Enabled = false;
+                        btnCancelarProcesso.Enabled = false;
                         PortaSerialCOM.Close();
                         btnConectarPortaSerialCOM.Text = "Abrir Porta (A)";                        
                         cbxPortaSerialCOM.Enabled = true;
@@ -733,6 +812,7 @@ namespace DLC_Reflash_Tool
                             cbxPortaSerialCOM.Enabled = false;
                             btnRefreshPortaSerialCOM.Enabled = false;
                             cbxModeloFonte.Enabled = false;
+                            btnCancelarProcesso.Enabled = true;
                             Salvar_Dados_Serial();
 
                             btn_Iniciar_Gravação.Invoke(new Action(() =>
@@ -785,6 +865,7 @@ namespace DLC_Reflash_Tool
                         TimerVoltageAnimation.Stop();
                         btnOUT1_OFF.Enabled = false;
                         btnOUT1_ON.Enabled = false;
+                        btnCancelarProcesso.Enabled = false;
                         PortaSerialCOM.Close();
                         btnConectarPortaSerialCOM.Text = "Abrir Porta (A)";
                         cbxPortaSerialCOM.Enabled = true;
@@ -801,6 +882,7 @@ namespace DLC_Reflash_Tool
                         TimerVoltageAnimation.Stop();
                         btnOUT1_OFF.Enabled = false;
                         btnOUT1_ON.Enabled = false;
+                        btnCancelarProcesso.Enabled = false;
                         PortaSerialCOM.Close();
                         btnConectarPortaSerialCOM.Text = "Abrir Porta (A)";
                         cbxPortaSerialCOM.Enabled = true;
@@ -1125,16 +1207,55 @@ namespace DLC_Reflash_Tool
         {
             if (PortaSerialCOM.IsOpen)
             {
-                if (lblSWName.Text != string.Empty)
+                if(lblSWName.Text == "D4X_ST131_SW0301_All.hex")
                 {
-                    //Aqui deve ser implementada a lógica para iniciar o processo de gravação, utilizando os arquivos e a porta serial selecionados.
-                    //Checar_Status_Inicial();
-                    IniciarProcessoGravacao();
+                    String resultado = String.Empty;
+                    DialogResult teclaResposta = InputBox("Confirmação de gravação MY27","Você esta prestes a gravar o software do 2262(MY27). Para prosseguir, digite MY27.", out resultado);
+                    
+                    if(teclaResposta == DialogResult.OK)
+                    {
+                        if(resultado == "MY27")
+                        {
+                            LOG_TXT("Usuário entrou com a frase de segurança corretamente");
+                            AppendToTxtInfoSafe("Usuário entrou com a frase de segurança corretamente.");
+                            if (lblSWName.Text != string.Empty)
+                            {
+                                //Aqui deve ser implementada a lógica para iniciar o processo de gravação, utilizando os arquivos e a porta serial selecionados.
+                                //Checar_Status_Inicial();
+                                IniciarProcessoGravacao();
+                            }
+                            else
+                            {
+                                MessageBox.Show("Arquivo de gravação não foi definido. Solicite ajuda do desenvolvedor.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Frase de segurança digitada incorretamente!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            AppendToTxtInfoSafe("Frase de segurança incorreta (" + resultado + ")");
+                            LOG_TXT("Frase de segurança incorreta (" + resultado + ")");
+                        }
+                    }
+                    else
+                    {
+                        AppendToTxtInfoSafe("Operação de gravação cancelada pelo usuário.");
+                        LOG_TXT("Operação de gravaçao do MY27 cancelada pelo usuário.");
+                        return;
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Selecione os arquivos D4X_DL_SWSB e D4X_ST_SW antes de iniciar a gravação!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                    if (lblSWName.Text != string.Empty)
+                    {
+                        //Aqui deve ser implementada a lógica para iniciar o processo de gravação, utilizando os arquivos e a porta serial selecionados.
+                        //Checar_Status_Inicial();
+                        IniciarProcessoGravacao();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Arquivo de gravação não foi definido. Solicite ajuda do desenvolvedor.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }                
             }
             else
             {
@@ -2179,6 +2300,7 @@ namespace DLC_Reflash_Tool
             btnConectarPortaSerialCOM.Enabled = true;
             lblSTATUS_Final.Text = "-----------------------";
             lblSTATUS_Final.ForeColor = Color.Black;
+            LOG_TXT("Botão CANCELAR foi pressionado");
         }
         
         void FecharProcessoPorId(int processId)
