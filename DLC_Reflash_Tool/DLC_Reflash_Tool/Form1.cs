@@ -2163,6 +2163,12 @@ namespace DLC_Reflash_Tool
 
         void txt_Info_AppendText(string text)
         {
+            int maxLines = 100;
+            if (txt_Info.Lines.Length > maxLines)
+            {
+                txt_Info.Lines = txt_Info.Lines.Skip(txt_Info.Lines.Length - maxLines).ToArray();
+            }
+
             // garante que cada nova entrada termine com uma nova linha
             string line = text + "\r\n";
 
@@ -2178,6 +2184,12 @@ namespace DLC_Reflash_Tool
                 
         void AppendToTxtInfoSafe(string text)
         {
+            int maxLines = 100;
+            if (txt_Info.Lines.Length > maxLines)
+            {
+                txt_Info.Lines = txt_Info.Lines.Skip(txt_Info.Lines.Length - maxLines).ToArray();
+            }
+
             if (txt_Info.InvokeRequired)
                 txt_Info.Invoke(new Action<string>(AppendToTxtInfoSafe), text + "\r\n");
             else
